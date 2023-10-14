@@ -10,10 +10,14 @@ import { usePathname } from "next/navigation";
 const MobileNav = () => {
   const pathname = usePathname();
   return (
-    <section className="background-light900_dark200 light-border custom-scrollbar sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 shadow-light-300 dark:shadow-none max-sm:hidden lg:w-[266px]">
+    <section className="custom-scrollbar background-light900_dark200 light-border sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 shadow-light-300 dark:shadow-none max-sm:hidden lg:w-[266px]">
       <div className="flex flex-1 flex-col gap-6">
         {sidebarLinks.map((item) => {
-          const isActive = pathname.includes(item.route);
+          const isActive =
+            pathname !== "/" && item.route === "/"
+              ? false
+              : pathname.includes(item.route);
+
           return (
             <Link
               key={item.route}
@@ -45,7 +49,7 @@ const MobileNav = () => {
       <SignedOut>
         <div className="flex flex-col gap-3">
           <Link href={"/sign-in"}>
-            <Button className="small-medium btn-secondary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
+            <Button className="btn-secondary small-medium min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
               <Image
                 src={"/assets/icons/account.svg"}
                 alt="login"
@@ -60,7 +64,7 @@ const MobileNav = () => {
           </Link>
 
           <Link href={"/sign-in"}>
-            <Button className="small-medium light-border-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
+            <Button className="btn-tertiary text-dark400_light900 light-border-2 small-medium min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
               <Image
                 src={"/assets/icons/sign-up.svg"}
                 alt="signup"
