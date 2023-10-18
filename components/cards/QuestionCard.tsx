@@ -1,9 +1,11 @@
 import Link from "next/link";
 import RenderTag from "../shared/RenderTag";
 import Metric from "../shared/Metric";
-import moment from "moment";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { formatter } from "@/lib/utils";
 
+dayjs.extend(relativeTime);
 interface Props {
   _id: string;
   title: string;
@@ -34,7 +36,7 @@ const QuestionCard = ({
       <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
         <div>
           <span className="subtle-regular text-dark400_light700 line-clamp-1 flex sm:hidden">
-            {moment(createdAt).fromNow()}
+            {dayjs(createdAt).fromNow()}
           </span>
           <Link href={`/question/${_id}`}>
             <h3 className="sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 flex-1">
@@ -55,7 +57,7 @@ const QuestionCard = ({
           imgUrl={"/assets/icons/avatar.svg"}
           alt="user"
           value={author.name}
-          title={`- asked ${moment(createdAt).fromNow()}`}
+          title={`- asked ${dayjs(createdAt).fromNow()}`}
           href={`/profile/${author._id}`}
           isAuthor
           textStyles="bidy-medium text-dark400_light700"

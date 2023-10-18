@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { KeyboardEvent, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { useForm } from "react-hook-form";
 import { questionsSchema, QuestionsSchema } from "@/lib/validations";
@@ -15,6 +15,11 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Badge } from "../ui/badge";
+import Image from "next/image";
+import { Button } from "../ui/button";
+import { createQuestion } from "@/lib/actions/question.action";
+const type: string = "create";
 
 const QuestionForm = () => {
   const editorRef = useRef(null);
@@ -28,7 +33,41 @@ const QuestionForm = () => {
     resolver: zodResolver(questionsSchema),
   });
 
-  const onSubmit = (values: QuestionsSchema) => {};
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, field: any) => {
+    if (e.key === "Enter" && field.name === "tags") {
+      e.preventDefault();
+      const tagInput = e.target as HTMLInputElement;
+      const tagValue = tagInput.value.trim();
+      if (tagValue !== "") {
+        if (tagValue.length > 15) {
+          return form.setError("tags", {
+            type: "required",
+            message: "Tag length should not be greater than 15 characters.",
+          });
+        }
+        if (!field.value.includes(tagValue)) {
+          form.setValue("tags", [...field.value, tagValue]);
+          tagInput.value = "";
+          form.clearErrors("tags");
+        }
+      } else {
+        form.trigger();
+      }
+    }
+  };
+
+  const handleTagRemove = (tag: string, field: any) => {
+    const newTags = field.value.filter((t: string) => tag !== t);
+    form.setValue("tags", newTags);
+  };
+
+  const onSubmit = async (values: QuestionsSchema) => {
+    try {
+      await createQuestion();
+    } catch (error) {
+    } finally {
+    }
+  };
   return (
     <Form {...form}>
       <form
@@ -51,7 +90,7 @@ const QuestionForm = () => {
                 />
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
-                Be specific and imagine you're asking a question to anothe
+                Be specific and imagine you &apos re asking a question to anothe
                 person.
               </FormDescription>
               <FormMessage className="text-red-500" />
@@ -75,6 +114,8 @@ const QuestionForm = () => {
                   // }
                   // @ts-ignore
                   onInit={(evt, editor) => (editorRef.current = editor)}
+                  onBlur={field.onBlur}
+                  onEditorChange={(value) => field.onChange(value)}
                   initialValue=""
                   init={{
                     height: 350,
@@ -98,10 +139,10 @@ const QuestionForm = () => {
                     ],
                     toolbar:
                       "undo redo | " +
-                      "codesample | bold italic forecolor | alignleft aligncenter " +
+                      "codesample | bold italic forecolor | alignleft aligncenter | " +
                       "alignright alignjustify | bullist numlist",
                     content_style:
-                      "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                      "body { font-family: Inter; font-size: 16px }",
                   }}
                 />
               </FormControl>
@@ -122,11 +163,33 @@ const QuestionForm = () => {
                 Tags <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl className="mt-3.5">
-                <Input
-                  placeholder="Add Tags..."
-                  className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border"
-                  {...field}
-                />
+                <>
+                  <Input
+                    placeholder="Add Tags..."
+                    className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border"
+                    onKeyDown={(e) => handleKeyDown(e, field)}
+                  />
+                  {field.value.length > 0 && (
+                    <div className="flex-start mt-2.5 gap-2.5">
+                      {field.value.map((tag) => (
+                        <Badge
+                          key={tag}
+                          className="subtle-medium background-light800_dark300 text-light400_light500 flex items-center justify-center gap-2 rounded-md border-none px-4 py-2 capitalize"
+                          onClick={() => handleTagRemove(tag, field)}
+                        >
+                          {tag}
+                          <Image
+                            src={"/assets/icons/close.svg"}
+                            alt="close"
+                            width={12}
+                            height={12}
+                            className="cursor-pointer object-contain invert-0 dark:invert"
+                          />
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </>
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
                 Add upto 3 tags to describe what your question is about. You
@@ -136,6 +199,18 @@ const QuestionForm = () => {
             </FormItem>
           )}
         />
+        <Button
+          type="submit"
+          className="primary-gradient w-fit !text-light-900"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? (
+            <>{type === "edit" ? "Editing..." : "Posting"}</>
+          ) : (
+            <>{type === "edit" ? "Edit Question" : "Ask a Question"}</>
+          )}
+          Submit
+        </Button>
       </form>
     </Form>
   );
