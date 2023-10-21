@@ -80,7 +80,7 @@ const QuestionForm = ({ mongoUserId }: Props) => {
       });
       router.push("/");
     } catch (error) {
-    } finally {
+      console.error(error);
     }
   };
   return (
