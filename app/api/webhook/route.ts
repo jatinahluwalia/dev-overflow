@@ -1,34 +1,41 @@
 /* eslint-disable camelcase */
-import type { IncomingHttpHeaders } from "http";
-import type { NextApiRequest, NextApiResponse } from "next";
-import type { WebhookRequiredHeaders } from "svix";
+
+import { NextRequest, NextResponse } from "next/server";
+
 import type { WebhookEvent } from "@clerk/nextjs/server";
 import { Webhook } from "svix";
 import { createUser, deleteUser, updateUser } from "@/lib/actions/user.action";
+import { headers } from "next/headers";
 
-const webhookSecret: string = process.env.WEBHOOK_SECRET || "";
-type NextApiRequestWithSvixRequiredHeaders = NextApiRequest & {
-  headers: IncomingHttpHeaders & WebhookRequiredHeaders;
-};
+const handler = async (req: NextRequest) => {
+  const webhookSecret: string = process.env.WEBHOOK_SECRET || "";
+  if (!webhookSecret) throw new Error("Please add a webhook secret");
 
-async function handler(
-  req: NextApiRequestWithSvixRequiredHeaders,
-  res: NextApiResponse,
-) {
-  const payload = JSON.stringify(req.body);
-  const headers = req.headers;
-  // Create a new Webhook instance with your webhook secret
+  const headerPayload = headers();
+  const svixId = headerPayload.get("svix-id");
+  const svixTimestamp = headerPayload.get("svix-timestamp");
+  const svixSignature = headerPayload.get("svix-signature");
+
+  if (!svixId || !svixTimestamp || !svixSignature)
+    return NextResponse.json("Error no svix headers", { status: 400 });
+
+  const payload = await req.json();
+  const body = JSON.stringify(payload);
+
   const wh = new Webhook(webhookSecret);
 
   let evt: WebhookEvent;
+
   try {
-    // Verify the webhook payload and headers
-    evt = wh.verify(payload, headers) as WebhookEvent;
-  } catch (_) {
-    // If the verification fails, return a 400 error
-    return res.status(400).json({});
+    evt = wh.verify(body, {
+      "svix-id": svixId,
+      "svix-signature": svixSignature,
+      "svix-timestamp": svixTimestamp,
+    }) as WebhookEvent;
+  } catch (error) {
+    console.error("Error verifying webhook", error);
+    return NextResponse.json("Error occured", { status: 400 });
   }
-  //   const { id } = evt.data;
 
   const eventType = evt.type;
   if (eventType === "user.created") {
@@ -41,7 +48,10 @@ async function handler(
       email: email_addresses[0].email_address,
       picture: image_url,
     });
-    return res.status(201).json({ message: "OK", user: mongoUser });
+    return NextResponse.json(
+      { message: "OK", user: mongoUser },
+      { status: 201 },
+    );
   }
   if (eventType === "user.updated") {
     const { id, email_addresses, image_url, username, first_name, last_name } =
@@ -56,15 +66,21 @@ async function handler(
       },
       path: `/profile/${id}`,
     });
-    return res.status(201).json({ message: "OK", user: mongoUser });
+    return NextResponse.json(
+      { message: "OK", user: mongoUser },
+      { status: 201 },
+    );
   }
   if (eventType === "user.deleted") {
     const { id } = evt.data;
     const deletedUser = await deleteUser({ clerkId: id as string });
 
-    return res.status(201).json({ message: "OK", user: deletedUser });
+    return NextResponse.json(
+      { message: "OK", user: deletedUser },
+      { status: 201 },
+    );
   }
-  return res.status(201).json("");
-}
+  return NextResponse.json("", { status: 201 });
+};
 
 export { handler as POST };
