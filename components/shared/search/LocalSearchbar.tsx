@@ -33,7 +33,6 @@ const LocalSearchbar = ({
       )}
       <Input
         type="text"
-        value={""}
         onChange={() => {}}
         placeholder={placeholder}
         className="no-focus paragraph-regular placeholder:text-light400_light500 h-max grow border-none bg-transparent p-0 shadow-none outline-none"

@@ -19,9 +19,17 @@ import { Badge } from "../ui/badge";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { createQuestion } from "@/lib/actions/question.action";
+import { usePathname, useRouter } from "next/navigation";
+
 const type: string = "create";
 
-const QuestionForm = () => {
+interface Props {
+  mongoUserId: string;
+}
+
+const QuestionForm = ({ mongoUserId }: Props) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const editorRef = useRef(null);
   const form = useForm<QuestionsSchema>({
     defaultValues: {
@@ -63,7 +71,14 @@ const QuestionForm = () => {
 
   const onSubmit = async (values: QuestionsSchema) => {
     try {
-      await createQuestion();
+      await createQuestion({
+        title: values.title,
+        content: values.explaination,
+        path: pathname,
+        tags: values.tags,
+        author: JSON.parse(mongoUserId),
+      });
+      router.push("/");
     } catch (error) {
     } finally {
     }
@@ -82,11 +97,10 @@ const QuestionForm = () => {
               <FormLabel className="paragraph-semibold text-dark400_light800">
                 Question Title <span className="text-primary-500">*</span>
               </FormLabel>
-              <FormControl className="mt-3.5">
+              <FormControl className="mt-3.5" {...field}>
                 <Input
                   placeholder="Question Title"
                   className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border"
-                  {...field}
                 />
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">

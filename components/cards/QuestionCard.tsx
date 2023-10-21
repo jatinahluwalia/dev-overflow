@@ -4,17 +4,15 @@ import Metric from "../shared/Metric";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { formatter } from "@/lib/utils";
+import { ITag } from "@/database/tag.model";
+import { IUser } from "@/database/user.model";
 
 dayjs.extend(relativeTime);
 interface Props {
   _id: string;
   title: string;
-  tags: { _id: string; name: string }[];
-  author: {
-    _id: string;
-    name: string;
-    picture: string;
-  };
+  tags: ITag[];
+  author: IUser;
   upvotes: number;
   views: number;
   answers: Array<object>;
@@ -48,7 +46,11 @@ const QuestionCard = ({
       </div>
       <div className="mt-3.5 flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <RenderTag key={tag._id} _id={tag._id} name={tag.name} />
+          <RenderTag
+            key={JSON.stringify(tag._id)}
+            _id={JSON.stringify(tag._id)}
+            name={tag.name}
+          />
         ))}
       </div>
       <div className="flex-between mt-6 w-full flex-wrap gap-3">
@@ -58,7 +60,7 @@ const QuestionCard = ({
           alt="user"
           value={author.name}
           title={`- asked ${dayjs(createdAt).fromNow()}`}
-          href={`/profile/${author._id}`}
+          href={`/profile/${JSON.stringify(author._id)}`}
           isAuthor
           textStyles="bidy-medium text-dark400_light700"
         />

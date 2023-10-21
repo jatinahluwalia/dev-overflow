@@ -1,4 +1,11 @@
-import { InferSchemaType, Model, Schema, model, models } from "mongoose";
+import {
+  HydratedDocument,
+  InferSchemaType,
+  Model,
+  Schema,
+  model,
+  models,
+} from "mongoose";
 const tagSchema = new Schema(
   {
     name: { type: String, required: true, unique: true },
@@ -9,7 +16,7 @@ const tagSchema = new Schema(
   { timestamps: true },
 );
 
-type ITag = InferSchemaType<typeof tagSchema>;
+export type ITag = HydratedDocument<InferSchemaType<typeof tagSchema>>;
 
 const Tag: Model<ITag> = models.Tag || model("Tag", tagSchema);
 

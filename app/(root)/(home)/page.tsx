@@ -5,153 +5,12 @@ import NoResult from "@/components/shared/NoResult";
 import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constants/filters";
+import { getQuestions } from "@/lib/actions/question.action";
 import Link from "next/link";
 import React from "react";
 
-const questions = [
-  {
-    _id: "1",
-    title: "Cascading deletes in SQL?",
-    tags: [
-      { _id: "1", name: "SQL" },
-      { _id: "2", name: "Python" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "" },
-    uploads: 10,
-    views: 10,
-    answers: 10,
-    createdAt: new Date(),
-    upvotes: 10,
-  },
-  {
-    _id: "2",
-    title: "How to center a div?",
-    tags: [
-      { _id: "1", name: "CSS" },
-      { _id: "2", name: "Python" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "" },
-    uploads: 10,
-    views: 10,
-    answers: 10,
-    createdAt: new Date(),
-    upvotes: 10,
-  },
-  {
-    _id: "2",
-    title: "How to center a div?",
-    tags: [
-      { _id: "1", name: "CSS" },
-      { _id: "2", name: "Python" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "" },
-    uploads: 10,
-    views: 10,
-    answers: 10,
-    createdAt: new Date(),
-    upvotes: 10,
-  },
-  {
-    _id: "2",
-    title: "How to center a div?",
-    tags: [
-      { _id: "1", name: "CSS" },
-      { _id: "2", name: "Python" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "" },
-    uploads: 10,
-    views: 10,
-    answers: 10,
-    createdAt: new Date(),
-    upvotes: 10,
-  },
-  {
-    _id: "2",
-    title: "How to center a div?",
-    tags: [
-      { _id: "1", name: "CSS" },
-      { _id: "2", name: "Python" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "" },
-    uploads: 10,
-    views: 10,
-    answers: 10,
-    createdAt: new Date(),
-    upvotes: 10,
-  },
-  {
-    _id: "2",
-    title: "How to center a div?",
-    tags: [
-      { _id: "1", name: "CSS" },
-      { _id: "2", name: "Python" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "" },
-    uploads: 10,
-    views: 10,
-    answers: 10,
-    createdAt: new Date(),
-    upvotes: 10,
-  },
-  {
-    _id: "2",
-    title: "How to center a div?",
-    tags: [
-      { _id: "1", name: "CSS" },
-      { _id: "2", name: "Python" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "" },
-    uploads: 10,
-    views: 10,
-    answers: 10,
-    createdAt: new Date(),
-    upvotes: 10,
-  },
-  {
-    _id: "2",
-    title: "How to center a div?",
-    tags: [
-      { _id: "1", name: "CSS" },
-      { _id: "2", name: "Python" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "" },
-    uploads: 10,
-    views: 10,
-    answers: 10,
-    createdAt: new Date(),
-    upvotes: 10,
-  },
-  {
-    _id: "2",
-    title: "How to center a div?",
-    tags: [
-      { _id: "1", name: "CSS" },
-      { _id: "2", name: "Python" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "" },
-    uploads: 10,
-    views: 10,
-    answers: 10,
-    createdAt: new Date(),
-    upvotes: 10,
-  },
-  {
-    _id: "2",
-    title: "How to center a div?",
-    tags: [
-      { _id: "1", name: "CSS" },
-      { _id: "2", name: "Python" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "" },
-    uploads: 10,
-    views: 10,
-    answers: 10,
-    createdAt: new Date(),
-    upvotes: 10,
-  },
-];
-
-const Home = () => {
+const Home = async () => {
+  const result = await getQuestions({});
   return (
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
@@ -179,11 +38,11 @@ const Home = () => {
       </div>
       <HomeFilters />
       <div className="mt-10 flex w-full flex-col gap-6">
-        {questions.length ? (
-          questions.map((question) => (
+        {result.questions.length ? (
+          result.questions.map((question) => (
             <QuestionCard
-              key={question._id}
-              _id={question._id}
+              key={JSON.stringify(question._id)}
+              _id={JSON.stringify(question._id)}
               title={question.title}
               tags={question.tags}
               author={question.author}
