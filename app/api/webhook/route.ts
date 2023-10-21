@@ -7,7 +7,7 @@ import { Webhook } from "svix";
 import { createUser, deleteUser, updateUser } from "@/lib/actions/user.action";
 import { headers } from "next/headers";
 
-const handler = async (req: NextRequest) => {
+export const POST = async (req: NextRequest) => {
   const webhookSecret: string = process.env.WEBHOOK_SECRET || "";
   if (!webhookSecret) throw new Error("Please add a webhook secret");
 
@@ -82,5 +82,3 @@ const handler = async (req: NextRequest) => {
   }
   return NextResponse.json("", { status: 201 });
 };
-
-export { handler as POST };
