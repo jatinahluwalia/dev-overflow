@@ -39,46 +39,70 @@ export const POST = async (req: NextRequest) => {
 
   const eventType = evt.type;
   if (eventType === "user.created") {
-    const { id, email_addresses, image_url, username, first_name, last_name } =
-      evt.data;
-    const mongoUser = await createUser({
-      clerkId: id,
-      name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
-      username: username || `${first_name}_${last_name}`,
-      email: email_addresses[0].email_address,
-      picture: image_url,
-    });
-    return NextResponse.json(
-      { message: "OK", user: mongoUser },
-      { status: 201 },
-    );
-  }
-  if (eventType === "user.updated") {
-    const { id, email_addresses, image_url, username, first_name, last_name } =
-      evt.data;
-    const mongoUser = await updateUser({
-      clerkId: id,
-      updateData: {
+    try {
+      const {
+        id,
+        email_addresses,
+        image_url,
+        username,
+        first_name,
+        last_name,
+      } = evt.data;
+      const mongoUser = await createUser({
+        clerkId: id,
         name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
         username: username || `${first_name}_${last_name}`,
         email: email_addresses[0].email_address,
         picture: image_url,
-      },
-      path: `/profile/${id}`,
-    });
-    return NextResponse.json(
-      { message: "OK", user: mongoUser },
-      { status: 201 },
-    );
+      });
+      return NextResponse.json(
+        { message: "OK", user: mongoUser },
+        { status: 201 },
+      );
+    } catch (error: any) {
+      return NextResponse.json(error.message, { status: 500 });
+    }
+  }
+  if (eventType === "user.updated") {
+    try {
+      const {
+        id,
+        email_addresses,
+        image_url,
+        username,
+        first_name,
+        last_name,
+      } = evt.data;
+      const mongoUser = await updateUser({
+        clerkId: id,
+        updateData: {
+          name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
+          username: username || `${first_name}_${last_name}`,
+          email: email_addresses[0].email_address,
+          picture: image_url,
+        },
+        path: `/profile/${id}`,
+      });
+      return NextResponse.json(
+        { message: "OK", user: mongoUser },
+        { status: 201 },
+      );
+    } catch (error: any) {
+      return NextResponse.json(error.message, { status: 500 });
+    }
   }
   if (eventType === "user.deleted") {
-    const { id } = evt.data;
-    const deletedUser = await deleteUser({ clerkId: id as string });
+    try {
+      const { id } = evt.data;
+      const deletedUser = await deleteUser({ clerkId: id as string });
 
-    return NextResponse.json(
-      { message: "OK", user: deletedUser },
-      { status: 201 },
-    );
+      return NextResponse.json(
+        { message: "OK", user: deletedUser },
+        { status: 201 },
+      );
+    } catch (error: any) {
+      return NextResponse.json(error.message, { status: 500 });
+    }
   }
   return NextResponse.json("", { status: 201 });
 };
