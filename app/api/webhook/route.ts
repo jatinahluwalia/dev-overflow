@@ -60,7 +60,7 @@ export const POST = async (req: NextRequest) => {
       clerkId: id,
       updateData: {
         name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
-        username: username as string,
+        username: username || "not given",
         email: email_addresses[0].email_address,
         picture: image_url,
       },
