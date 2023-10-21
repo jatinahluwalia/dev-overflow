@@ -11,7 +11,7 @@ type NextApiRequestWithSvixRequiredHeaders = NextApiRequest & {
   headers: IncomingHttpHeaders & WebhookRequiredHeaders;
 };
 
-export default async function handler(
+async function handler(
   req: NextApiRequestWithSvixRequiredHeaders,
   res: NextApiResponse,
 ) {
@@ -66,3 +66,5 @@ export default async function handler(
   }
   return res.status(201).json("");
 }
+
+export { handler as POST };
