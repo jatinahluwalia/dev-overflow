@@ -203,3 +203,12 @@
     );
   }
 }
+
+/* Hiding clerk branding */
+
+.cl-internal-b3fm6y {
+  display: none !important;
+}
+.cl-internal-uyu30o {
+  display: none !important;
+}

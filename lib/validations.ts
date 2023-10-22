@@ -7,3 +7,9 @@ export const questionsSchema = z.object({
 });
 
 export type QuestionsSchema = z.infer<typeof questionsSchema>;
+
+export const answerSchema = z.object({
+  answer: z.string().min(100),
+});
+
+export type AnswerSchema = z.infer<typeof answerSchema>;

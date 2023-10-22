@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeProvider";
 import {
   Menubar,
@@ -13,6 +13,10 @@ import Image from "next/image";
 import { themes } from "@/constants";
 
 const Theme = () => {
+  const [localTheme, setLocalTheme] = useState("");
+  useEffect(() => {
+    setLocalTheme(localStorage.theme);
+  }, []);
   const { mode, setMode } = useTheme();
   return (
     <Menubar className="relative border-none bg-transparent shadow-none">
@@ -40,8 +44,13 @@ const Theme = () => {
               key={theme.value}
               className="flex items-center gap-4 px-2.5 py-2 dark:focus:bg-dark-400"
               onClick={() => {
-                setMode(theme.value);
                 localStorage.theme = theme.value;
+                setLocalTheme(theme.value);
+                theme.value !== "system"
+                  ? setMode(theme.value)
+                  : window.matchMedia("(prefers-color-scheme: dark)").matches
+                  ? setMode("dark")
+                  : setMode("light");
               }}
             >
               <Image
@@ -49,11 +58,11 @@ const Theme = () => {
                 alt={theme.value}
                 height={16}
                 width={16}
-                className={`${mode === theme.value && "active-theme"}`}
+                className={`${localTheme === theme.value && "active-theme"}`}
               />
               <p
                 className={`body-semibold text-light-500 ${
-                  mode === theme.value
+                  localTheme === theme.value
                     ? "text-primary-500"
                     : "text-dark100_light900"
                 }`}

@@ -1,4 +1,11 @@
-import { InferSchemaType, Model, Schema, model, models } from "mongoose";
+import {
+  Document,
+  InferSchemaType,
+  Model,
+  Schema,
+  model,
+  models,
+} from "mongoose";
 const questionSchema = new Schema(
   {
     title: {
@@ -11,12 +18,12 @@ const questionSchema = new Schema(
     upvotes: [{ type: Schema.Types.ObjectId, ref: "User" }],
     downvotes: [{ type: Schema.Types.ObjectId, ref: "User" }],
     author: { type: Schema.Types.ObjectId, ref: "User" },
-    answers: { type: Schema.Types.ObjectId, ref: "Answer" },
+    answers: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
   },
   { timestamps: true },
 );
 
-export type IQuestion = InferSchemaType<typeof questionSchema>;
+export type IQuestion = Document & InferSchemaType<typeof questionSchema>;
 
 const Question: Model<IQuestion> =
   models.Question || model("Question", questionSchema);

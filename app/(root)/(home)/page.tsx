@@ -32,7 +32,7 @@ const Home = async () => {
         />
         <Filter
           filters={HomePageFilters}
-          otherClasses="sm:max-h-[170px]"
+          otherClasses="min-h-[56px] sm:min-w-[170px]"
           containerClasses="hidden max-md:flex"
         />
       </div>
@@ -41,8 +41,8 @@ const Home = async () => {
         {result.questions.length ? (
           result.questions.map((question) => (
             <QuestionCard
-              key={JSON.stringify(question._id)}
-              _id={JSON.stringify(question._id)}
+              key={question._id}
+              _id={question._id}
               title={question.title}
               tags={question.tags}
               author={question.author}

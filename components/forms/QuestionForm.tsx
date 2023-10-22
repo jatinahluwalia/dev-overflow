@@ -20,6 +20,7 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { createQuestion } from "@/lib/actions/question.action";
 import { usePathname, useRouter } from "next/navigation";
+import { useTheme } from "@/context/ThemeProvider";
 
 const type: string = "create";
 
@@ -28,6 +29,7 @@ interface Props {
 }
 
 const QuestionForm = ({ mongoUserId }: Props) => {
+  const { mode } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const editorRef = useRef(null);
@@ -123,13 +125,11 @@ const QuestionForm = ({ mongoUserId }: Props) => {
               <FormControl className="mt-3.5">
                 <Editor
                   apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
-                  // tinymceScriptSrc={
-                  //   process.env.PUBLIC_URL + "/tinymce/tinymce.min.js"
-                  // }
                   // @ts-ignore
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   onBlur={field.onBlur}
-                  onEditorChange={(value) => field.onChange(value)}
+                  value={field.value}
+                  onEditorChange={field.onChange}
                   initialValue=""
                   init={{
                     height: 350,
@@ -157,6 +157,8 @@ const QuestionForm = ({ mongoUserId }: Props) => {
                       "alignright alignjustify | bullist numlist",
                     content_style:
                       "body { font-family: Inter; font-size: 16px }",
+                    skin: mode === "dark" ? "oxide-dark" : "oxide",
+                    content_css: mode,
                   }}
                 />
               </FormControl>
