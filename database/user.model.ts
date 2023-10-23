@@ -41,7 +41,11 @@ const userSchema = new Schema(
   { timestamps: true },
 );
 
-export type IUser = Document & InferSchemaType<typeof userSchema>;
+export type IUser = Document &
+  InferSchemaType<typeof userSchema> & {
+    _id: string;
+    saved: string[];
+  };
 
 const User: Model<IUser> = models.User || model("User", userSchema);
 

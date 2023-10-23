@@ -23,7 +23,15 @@ const questionSchema = new Schema(
   { timestamps: true },
 );
 
-export type IQuestion = Document & InferSchemaType<typeof questionSchema>;
+export type IQuestion = Document &
+  InferSchemaType<typeof questionSchema> & {
+    _id: string;
+    upvotes: string[];
+    downvotes: string[];
+    answers: string[];
+    author: string;
+    tags: string[];
+  };
 
 const Question: Model<IQuestion> =
   models.Question || model("Question", questionSchema);

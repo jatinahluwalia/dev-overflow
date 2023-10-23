@@ -28,7 +28,7 @@ export const getTopInteractedTags = async (
     throw error;
   }
 };
-export const getAllTags = async (params: GetAllTagsParams) => {
+export const getAllTags = async (_params: GetAllTagsParams) => {
   try {
     await connectDB();
     const tags = await Tag.find({});

@@ -18,7 +18,13 @@ const answerSchema = new Schema(
   { timestamps: true },
 );
 
-type IAnswer = Document & InferSchemaType<typeof answerSchema>;
+type IAnswer = Document &
+  InferSchemaType<typeof answerSchema> & {
+    _id: string;
+    question: string;
+    upvotes: string[];
+    downvotes: string[];
+  };
 
 const Answer: Model<IAnswer> = models.Answer || model("Answer", answerSchema);
 

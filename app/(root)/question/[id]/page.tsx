@@ -11,6 +11,8 @@ import RenderTag from "@/components/shared/RenderTag";
 import AnswerForm from "@/components/forms/AnswerForm";
 import { auth } from "@clerk/nextjs";
 import { getUserById } from "@/lib/actions/user.action";
+import AllAnswers from "@/components/shared/AllAnswers";
+import Votes from "@/components/shared/Votes";
 
 dayjs.extend(relativeTime);
 
@@ -45,7 +47,18 @@ const Page = async ({ params: { id } }: Props) => {
               {result.author.name}
             </p>
           </Link>
-          <div className="flex justify-end">VOTING</div>
+          <div className="flex justify-end">
+            <Votes
+              type="question"
+              itemId={String(result._id)}
+              userId={mongoUser?._id}
+              upvotes={result.upvotes.length}
+              hasUpvoted={result.upvotes.includes(mongoUser?._id)}
+              downvotes={result.downvotes.length}
+              hasDownvoted={result.downvotes.includes(mongoUser?._id)}
+              hasSaved={mongoUser?.saved.includes(result._id)}
+            />
+          </div>
         </div>
         <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full text-left">
           {result.title}
@@ -87,11 +100,19 @@ const Page = async ({ params: { id } }: Props) => {
         ))}
       </div>
 
-      <AnswerForm
-        question={result.content}
-        questionId={String(result._id)}
-        authorId={String(mongoUser?._id)}
+      <AllAnswers
+        questionId={id}
+        userId={mongoUser?._id}
+        totalAnswers={result.answers.length}
       />
+
+      {mongoUser && (
+        <AnswerForm
+          question={result.content}
+          questionId={result._id}
+          authorId={mongoUser._id}
+        />
+      )}
     </>
   );
 };
