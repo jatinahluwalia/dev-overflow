@@ -1,15 +1,18 @@
 "use server";
 
-import User from "@/database/user.model";
+import User, { IUser } from "@/database/user.model";
 import { connectDB } from "../mongoose";
 import {
   CreateUserParams,
   DeleteUserParams,
   GetAllUsersParams,
+  GetSavedQuestionsParams,
+  ToggleSaveQuestionParams,
   UpdateUserParams,
 } from "./shared.types";
 import { revalidatePath } from "next/cache";
 import Question from "@/database/question.model";
+import Tag, { ITag } from "@/database/tag.model";
 
 export const getUserById = async ({ userId }: { userId: string }) => {
   try {
@@ -77,6 +80,74 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
     throw error;
   }
 };
+
+export const saveQuestion = async (params: ToggleSaveQuestionParams) => {
+  try {
+    await connectDB();
+
+    const { path, questionId, userId } = params;
+
+    const user = await User.findById(userId);
+
+    if (!user) throw new Error("User not found");
+
+    let updateQuery = {};
+
+    if (user.saved.includes(questionId)) {
+      updateQuery = { $pull: { saved: questionId } };
+    } else {
+      updateQuery = { $addToSet: { saved: questionId } };
+    }
+
+    await User.findByIdAndUpdate(userId, updateQuery);
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getSavedQuestions = async (params: GetSavedQuestionsParams) => {
+  try {
+    await connectDB();
+
+    const { clerkId, page = 1, pageSize = 20, searchQuery = "" } = params;
+
+    const user = await getUserById({ userId: clerkId });
+
+    if (!user) throw new Error("User not found");
+
+    const questionIds = user.saved;
+
+    const questions = await Question.find({
+      _id: { $in: questionIds },
+      $or: [
+        { title: { $regex: new RegExp(searchQuery, "i") } },
+        { content: { $regex: new RegExp(searchQuery, "i") } },
+      ],
+    })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .populate<{ author: IUser; tags: ITag[] }>([
+        {
+          path: "author",
+          model: User,
+          select: "_id clerkId name picture",
+        },
+        {
+          path: "tags",
+          model: Tag,
+        },
+      ]);
+
+    return { questions };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 // export const getAllUsers = async (params: GetAllUsersParams) => {
 //   try {
 //     await connectDB();

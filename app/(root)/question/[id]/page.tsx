@@ -50,8 +50,8 @@ const Page = async ({ params: { id } }: Props) => {
           <div className="flex justify-end">
             <Votes
               type="question"
-              itemId={String(result._id)}
-              userId={mongoUser?._id}
+              itemId={result.id}
+              userId={mongoUser?.id}
               upvotes={result.upvotes.length}
               hasUpvoted={result.upvotes.includes(mongoUser?._id)}
               downvotes={result.downvotes.length}
@@ -92,8 +92,8 @@ const Page = async ({ params: { id } }: Props) => {
       <div className="mt-8 flex flex-wrap gap-2">
         {result.tags.map((tag) => (
           <RenderTag
-            key={tag._id}
-            _id={tag._id}
+            key={tag.id}
+            _id={tag.id}
             name={tag.name}
             showCount={false}
           />
@@ -102,15 +102,15 @@ const Page = async ({ params: { id } }: Props) => {
 
       <AllAnswers
         questionId={id}
-        userId={mongoUser?._id}
+        userId={mongoUser?.id}
         totalAnswers={result.answers.length}
       />
 
       {mongoUser && (
         <AnswerForm
           question={result.content}
-          questionId={result._id}
-          authorId={mongoUser._id}
+          questionId={result.id}
+          authorId={mongoUser.id}
         />
       )}
     </>

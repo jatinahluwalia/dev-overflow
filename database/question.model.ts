@@ -13,25 +13,25 @@ const questionSchema = new Schema(
       required: true,
     },
     content: { type: String, required: true },
-    tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
+    tags: [{ type: String, ref: "Tag" }],
     views: { type: Number, default: 0 },
-    upvotes: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    downvotes: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    author: { type: Schema.Types.ObjectId, ref: "User" },
-    answers: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
+    upvotes: [{ type: String, ref: "User" }],
+    downvotes: [{ type: String, ref: "User" }],
+    author: { type: String, ref: "User" },
+    answers: [{ type: String, ref: "Answer" }],
   },
   { timestamps: true },
 );
 
-export type IQuestion = Document &
-  InferSchemaType<typeof questionSchema> & {
-    _id: string;
-    upvotes: string[];
-    downvotes: string[];
-    answers: string[];
-    author: string;
-    tags: string[];
-  };
+export type IQuestion = Document & InferSchemaType<typeof questionSchema>;
+// & {
+//   _id: string;
+//   upvotes: string[];
+//   downvotes: string[];
+//   answers: string[];
+//   author: string;
+//   tags: string[];
+// };
 
 const Question: Model<IQuestion> =
   models.Question || model("Question", questionSchema);

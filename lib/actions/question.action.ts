@@ -8,6 +8,7 @@ import {
   CreateQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
+  QuestionVoteParams,
 } from "./shared.types";
 import User, { IUser } from "@/database/user.model";
 
@@ -82,6 +83,75 @@ export const getQuestionById = async (params: GetQuestionByIdParams) => {
         select: "_id clerkId name picture",
       });
     return question!;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const upvoteQuestion = async (params: QuestionVoteParams) => {
+  try {
+    await connectDB();
+
+    const { hasdownVoted, hasupVoted, path, questionId, userId } = params;
+
+    let updateQuery = {};
+    if (hasupVoted) {
+      updateQuery = { $pull: { upvotes: userId } };
+    } else if (hasdownVoted) {
+      updateQuery = {
+        $push: { upvotes: userId },
+        $pull: { downvotes: userId },
+      };
+    } else {
+      updateQuery = { $addToSet: { upvotes: userId } };
+    }
+
+    const question = await Question.findByIdAndUpdate(questionId, updateQuery, {
+      new: true,
+    });
+
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    // TODO: Increase author's reputation
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+export const downvoteQuestion = async (params: QuestionVoteParams) => {
+  try {
+    await connectDB();
+
+    const { hasdownVoted, hasupVoted, path, questionId, userId } = params;
+
+    let updateQuery = {};
+    if (hasdownVoted) {
+      updateQuery = { $pull: { downvotes: userId } };
+    } else if (hasupVoted) {
+      updateQuery = {
+        $pull: { upvotes: userId },
+        $push: { downvotes: userId },
+      };
+    } else {
+      updateQuery = { $addToSet: { downvotes: userId } };
+    }
+
+    const question = await Question.findByIdAndUpdate(questionId, updateQuery, {
+      new: true,
+    });
+
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    // TODO: Increase author's reputation
+
+    revalidatePath(path);
   } catch (error) {
     console.log(error);
     throw error;

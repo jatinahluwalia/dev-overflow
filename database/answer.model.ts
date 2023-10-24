@@ -9,22 +9,22 @@ import {
 
 const answerSchema = new Schema(
   {
-    author: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    question: { type: Schema.Types.ObjectId, ref: "Question", required: true },
+    author: { type: String, ref: "User", required: true },
+    question: { type: String, ref: "Question", required: true },
     content: { type: String, required: true },
-    upvotes: [{ type: Schema.Types.ObjectId, required: true, ref: "User" }],
-    downvotes: [{ type: Schema.Types.ObjectId, required: true, ref: "User" }],
+    upvotes: [{ type: String, required: true, ref: "User" }],
+    downvotes: [{ type: String, required: true, ref: "User" }],
   },
   { timestamps: true },
 );
 
-type IAnswer = Document &
-  InferSchemaType<typeof answerSchema> & {
-    _id: string;
-    question: string;
-    upvotes: string[];
-    downvotes: string[];
-  };
+export type IAnswer = Document & InferSchemaType<typeof answerSchema>;
+// & {
+//   _id: string;
+//   question: string;
+//   upvotes: string[];
+//   downvotes: string[];
+// };
 
 const Answer: Model<IAnswer> = models.Answer || model("Answer", answerSchema);
 
