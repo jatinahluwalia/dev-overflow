@@ -1,12 +1,13 @@
 "use server";
 
-import Question from "@/database/question.model";
+import Question, { IQuestion } from "@/database/question.model";
 import { connectDB } from "../mongoose";
 import Tag, { ITag } from "@/database/tag.model";
 import { revalidatePath } from "next/cache";
 import {
   CreateQuestionParams,
   GetQuestionByIdParams,
+  GetQuestionsByTagIdParams,
   GetQuestionsParams,
   QuestionVoteParams,
 } from "./shared.types";
@@ -152,6 +153,60 @@ export const downvoteQuestion = async (params: QuestionVoteParams) => {
     // TODO: Increase author's reputation
 
     revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getQuestionsByTag = async (params: GetQuestionsByTagIdParams) => {
+  try {
+    await connectDB();
+
+    const { tagId, page = 1, pageSize = 10, searchQuery = "" } = params;
+
+    const tag = await Tag.findById(tagId)
+      .populate<{
+        questions: (IQuestion & {
+          tags: ITag[];
+          author: IUser;
+        })[];
+      }>({
+        path: "questions",
+        model: Question,
+        options: {
+          sort: { createdAt: -1 },
+        },
+        match: {
+          $or: [
+            {
+              title: { $regex: new RegExp(searchQuery, "i") },
+            },
+            {
+              content: { $regex: new RegExp(searchQuery, "i") },
+            },
+          ],
+        },
+        populate: [
+          {
+            path: "author",
+            model: User,
+            select: "_id name picture clerkId",
+          },
+          {
+            path: "tags",
+            model: Tag,
+            select: "_id name",
+          },
+        ],
+      })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+    if (!tag) throw new Error("Tag not found");
+
+    const questions = tag.questions;
+
+    return { tag, questions };
   } catch (error) {
     console.log(error);
     throw error;

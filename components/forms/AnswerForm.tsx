@@ -33,6 +33,7 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
     defaultValues: {
       answer: "",
     },
+    mode: "onChange",
   });
   const handleCreateAnswer = async (values: AnswerSchema) => {
     try {
@@ -42,8 +43,8 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
         question: questionId,
         path: pathname,
       });
-      form.reset();
       form.clearErrors();
+      form.reset();
     } catch (error) {
       console.log(error);
     }

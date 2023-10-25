@@ -21,7 +21,7 @@ export const createAnswer = async (params: CreateAnswerParams) => {
       $push: { answers: newAnswer.id },
     });
     revalidatePath(path);
-    return "Updated";
+    return "Created";
   } catch (error) {
     console.log(error);
     throw error;

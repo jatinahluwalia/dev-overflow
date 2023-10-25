@@ -2,12 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { sidebarLinks } from "@/constants";
-import { SignedOut } from "@clerk/nextjs";
+import { SignedOut, useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const MobileNav = () => {
+  const { userId } = useAuth();
   const pathname = usePathname();
   return (
     <section className="custom-scrollbar background-light900_dark200 light-border sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 shadow-light-300 dark:shadow-none max-sm:hidden lg:w-[266px]">
@@ -17,6 +18,12 @@ const MobileNav = () => {
             pathname !== "/" && item.route === "/"
               ? false
               : pathname.includes(item.route);
+
+          if (!userId && item.route === "/profile") return null;
+
+          if (item.route === "/profile") {
+            item.route = `/profile/${userId}`;
+          }
 
           return (
             <Link

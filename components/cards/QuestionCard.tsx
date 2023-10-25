@@ -55,7 +55,7 @@ const QuestionCard = ({
           alt="user"
           value={author.name}
           title={`- asked ${dayjs(createdAt).fromNow()}`}
-          href={`/profile/${author._id}`}
+          href={`/profile/${author.clerkId}`}
           isAuthor
           textStyles="bidy-medium text-dark400_light700"
         />
