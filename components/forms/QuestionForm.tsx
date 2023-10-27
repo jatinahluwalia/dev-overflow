@@ -2,7 +2,7 @@
 
 import { KeyboardEvent, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import { useForm } from "react-hook-form";
+import { ControllerRenderProps, useForm } from "react-hook-form";
 import { questionsSchema, QuestionsSchema } from "@/lib/validations";
 import {
   Form,
@@ -18,33 +18,53 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { createQuestion } from "@/lib/actions/question.action";
+import { createQuestion, editQuestion } from "@/lib/actions/question.action";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "@/context/ThemeProvider";
+import { IQuestion } from "@/database/question.model";
+import { ITag } from "@/database/tag.model";
+import { IUser } from "@/database/user.model";
 
-const type: string = "create";
+type QuestionDetails = Omit<IQuestion, "tags" | "author"> & {
+  tags: ITag[];
+  author: IUser;
+};
 
 interface Props {
   mongoUserId: string;
+  questionDetails?: string;
+  type?: "edit" | "create";
 }
 
-const QuestionForm = ({ mongoUserId }: Props) => {
+const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
   const { mode } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const editorRef = useRef(null);
+
+  const parsedQuestionDetails: QuestionDetails = questionDetails
+    ? JSON.parse(questionDetails)
+    : {};
+
+  const tagsValue: string[] = parsedQuestionDetails.tags?.map(
+    (tag) => tag.name,
+  );
+
   const form = useForm<QuestionsSchema>({
     defaultValues: {
-      title: "",
-      explaination: "",
-      tags: [],
+      title: parsedQuestionDetails.title || "",
+      explaination: parsedQuestionDetails.content || "",
+      tags: tagsValue || [],
     },
     mode: "all",
     resolver: zodResolver(questionsSchema),
   });
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, field: any) => {
-    if (e.key === "Enter" && field.name === "tags") {
+  const handleKeyDown = (
+    e: KeyboardEvent<HTMLInputElement>,
+    field: ControllerRenderProps<QuestionsSchema, "tags">,
+  ) => {
+    if (e.key === "Enter") {
       e.preventDefault();
       const tagInput = e.target as HTMLInputElement;
       const tagValue = tagInput.value.trim();
@@ -66,21 +86,34 @@ const QuestionForm = ({ mongoUserId }: Props) => {
     }
   };
 
-  const handleTagRemove = (tag: string, field: any) => {
+  const handleTagRemove = (
+    tag: string,
+    field: ControllerRenderProps<QuestionsSchema, "tags">,
+  ) => {
     const newTags = field.value.filter((t: string) => tag !== t);
     form.setValue("tags", newTags);
   };
 
   const onSubmit = async (values: QuestionsSchema) => {
     try {
-      await createQuestion({
-        title: values.title,
-        content: values.explaination,
-        path: pathname,
-        tags: values.tags,
-        author: JSON.parse(mongoUserId),
-      });
-      router.push("/");
+      if (type === "edit") {
+        await editQuestion({
+          questionId: parsedQuestionDetails._id,
+          title: values.title,
+          content: values.explaination,
+          path: pathname,
+        });
+        router.push(`/question/${parsedQuestionDetails._id}`);
+      } else {
+        await createQuestion({
+          title: values.title,
+          content: values.explaination,
+          path: pathname,
+          tags: values.tags,
+          author: mongoUserId,
+        });
+        router.push("/");
+      }
     } catch (error) {
       console.error(error);
     }
@@ -126,11 +159,11 @@ const QuestionForm = ({ mongoUserId }: Props) => {
                 <Editor
                   apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
                   // @ts-ignore
-                  onInit={(evt, editor) => (editorRef.current = editor)}
+                  onInit={(_evt, editor) => (editorRef.current = editor)}
                   onBlur={field.onBlur}
                   value={field.value}
                   onEditorChange={field.onChange}
-                  initialValue=""
+                  initialValue={parsedQuestionDetails.content || ""}
                   init={{
                     height: 350,
                     menubar: false,
@@ -181,6 +214,7 @@ const QuestionForm = ({ mongoUserId }: Props) => {
               <FormControl className="mt-3.5">
                 <>
                   <Input
+                    disabled={type === "edit"}
                     placeholder="Add Tags..."
                     className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border"
                     onKeyDown={(e) => handleKeyDown(e, field)}
@@ -191,16 +225,20 @@ const QuestionForm = ({ mongoUserId }: Props) => {
                         <Badge
                           key={tag}
                           className="subtle-medium background-light800_dark300 text-light400_light500 flex items-center justify-center gap-2 rounded-md border-none px-4 py-2 capitalize"
-                          onClick={() => handleTagRemove(tag, field)}
+                          onClick={() =>
+                            type === "edit" && handleTagRemove(tag, field)
+                          }
                         >
                           {tag}
-                          <Image
-                            src={"/assets/icons/close.svg"}
-                            alt="close"
-                            width={12}
-                            height={12}
-                            className="cursor-pointer object-contain invert-0 dark:invert"
-                          />
+                          {type === "edit" && (
+                            <Image
+                              src={"/assets/icons/close.svg"}
+                              alt="close"
+                              width={12}
+                              height={12}
+                              className="cursor-pointer object-contain invert-0 dark:invert"
+                            />
+                          )}
                         </Badge>
                       ))}
                     </div>

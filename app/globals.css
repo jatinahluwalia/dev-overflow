@@ -102,22 +102,25 @@ body {
 }
 
 body::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
-  border-radius: 2px;
+  width: 5px;
+  height: 5px;
 }
 
 body::-webkit-scrollbar-track {
-  background: #ffffff;
+  @apply bg-light-900 dark:bg-dark-200;
 }
 
 body::-webkit-scrollbar-thumb {
-  background: #888;
+  @apply primary-gradient;
   border-radius: 50px;
 }
 
 body::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: linear-gradient(
+    129deg,
+    rgba(255, 112, 0, 0.8) 0%,
+    rgba(226, 153, 95, 0.8) 100%
+  );
 }
 
 /* Markdown Start */

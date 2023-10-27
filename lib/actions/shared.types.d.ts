@@ -11,7 +11,7 @@ export interface CreateQuestionParams {
 export interface GetQuestionsParams {
   page?: number;
   pageSize?: number;
-  searchQuery?: number;
+  searchQuery?: string;
   filter?: number;
 }
 

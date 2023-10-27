@@ -7,7 +7,7 @@ import {
   upvoteQuestion,
 } from "@/lib/actions/question.action";
 import { saveQuestion } from "@/lib/actions/user.action";
-import { formatter } from "@/lib/utils";
+import { numberFormatter } from "@/lib/utils";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -122,7 +122,7 @@ const Votes = ({
 
           <div className="flex-center background-light700_dark400 min-w-[18px] rounded-sm p-1">
             <p className="subtle-medium text-dark400_light900">
-              {formatter(upvotes)}
+              {numberFormatter(upvotes)}
             </p>
           </div>
         </div>
@@ -142,7 +142,7 @@ const Votes = ({
 
           <div className="flex-center background-light700_dark400 min-w-[18px] rounded-sm p-1">
             <p className="subtle-medium text-dark400_light900">
-              {formatter(downvotes)}
+              {numberFormatter(downvotes)}
             </p>
           </div>
         </div>

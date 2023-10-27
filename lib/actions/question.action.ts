@@ -6,17 +6,29 @@ import Tag, { ITag } from "@/database/tag.model";
 import { revalidatePath } from "next/cache";
 import {
   CreateQuestionParams,
+  DeleteQuestionParams,
+  EditQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsByTagIdParams,
   GetQuestionsParams,
   QuestionVoteParams,
 } from "./shared.types";
 import User, { IUser } from "@/database/user.model";
+import Answer from "@/database/answer.model";
+import Interaction from "@/database/interaction.model";
 
 export const getQuestions = async (params: GetQuestionsParams) => {
   try {
     await connectDB();
-    const questions = await Question.find()
+    const { page = 1, pageSize = 10, searchQuery = "" } = params;
+    const questions = await Question.find({
+      $or: [
+        { title: { $regex: new RegExp(searchQuery, "i") } },
+        { content: { $regex: new RegExp(searchQuery, "i") } },
+      ],
+    })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
       .populate<{
         tags: ITag[];
         author: IUser;
@@ -207,6 +219,63 @@ export const getQuestionsByTag = async (params: GetQuestionsByTagIdParams) => {
     const questions = tag.questions;
 
     return { tag, questions };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const deleteQuestion = async (params: DeleteQuestionParams) => {
+  try {
+    await connectDB();
+    const { path, questionId } = params;
+
+    await Question.findByIdAndDelete(questionId);
+    await Answer.deleteMany({ question: questionId });
+    await Interaction.deleteMany({ question: questionId });
+    await Tag.updateMany(
+      { questions: questionId },
+      { $pull: { questions: questionId } },
+    );
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const editQuestion = async (params: EditQuestionParams) => {
+  try {
+    await connectDB();
+    const { path, questionId, content, title } = params;
+
+    const updatedQuestion = await Question.findByIdAndUpdate(
+      questionId,
+      { content, title },
+      { new: true },
+    );
+
+    if (!updatedQuestion) throw new Error("Question not found");
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getHotQuestions = async () => {
+  try {
+    await connectDB();
+    const questions = await Question.find()
+      .sort({
+        views: -1,
+        upvotes: -1,
+      })
+      .limit(5);
+
+    return questions;
   } catch (error) {
     console.log(error);
     throw error;

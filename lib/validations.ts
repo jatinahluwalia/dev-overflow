@@ -13,3 +13,13 @@ export const answerSchema = z.object({
 });
 
 export type AnswerSchema = z.infer<typeof answerSchema>;
+
+export const userSchema = z.object({
+  name: z.string().min(5).max(50),
+  username: z.string().min(5),
+  portfolioWebsite: z.string().url(),
+  location: z.string(),
+  bio: z.string().min(10).max(150),
+});
+
+export type UserSchema = z.infer<typeof userSchema>;

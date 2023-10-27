@@ -8,11 +8,12 @@ import {
   GetAllUsersParams,
   GetSavedQuestionsParams,
   GetUserByIdParams,
+  GetUserStatsParams,
   ToggleSaveQuestionParams,
   UpdateUserParams,
 } from "./shared.types";
 import { revalidatePath } from "next/cache";
-import Question from "@/database/question.model";
+import Question, { IQuestion } from "@/database/question.model";
 import Tag, { ITag } from "@/database/tag.model";
 import Answer from "@/database/answer.model";
 
@@ -21,6 +22,7 @@ export const getUserById = async ({ userId }: { userId: string }) => {
     await connectDB();
 
     const user = await User.findOne({ clerkId: userId });
+    if (!user) throw new Error("User not found");
     return user;
   } catch (error) {
     console.log(error);
@@ -74,8 +76,16 @@ export const deleteUser = async (params: DeleteUserParams) => {
 export const getAllUsers = async (params: GetAllUsersParams) => {
   try {
     await connectDB();
-    // const { page = 1, pageSize = 20, filter, searchQuery } = params;
-    const users = await User.find({}).sort({ createdAt: -1 });
+    const { page = 1, pageSize = 20, searchQuery = "" } = params;
+    const users = await User.find({
+      $or: [
+        { name: { $regex: new RegExp(searchQuery, "i") } },
+        { username: { $regex: new RegExp(searchQuery, "i") } },
+      ],
+    })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .sort({ createdAt: -1 });
     return { users };
   } catch (error) {
     console.log(error);
@@ -131,6 +141,7 @@ export const getSavedQuestions = async (params: GetSavedQuestionsParams) => {
     })
       .skip((page - 1) * pageSize)
       .limit(pageSize)
+      .sort({ createdAt: -1 })
       .populate<{ author: IUser; tags: ITag[] }>([
         {
           path: "author",
@@ -165,6 +176,59 @@ export const getUserInfo = async (params: GetUserByIdParams) => {
     if (!user) throw new Error("User not found");
 
     return { user, totalQuestions, totalAnswers };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getUserQuestions = async (params: GetUserStatsParams) => {
+  try {
+    await connectDB();
+    const { userId, page = 1, pageSize = 10 } = params;
+
+    const totalQuestions = await Question.countDocuments({ author: userId });
+
+    const questions = await Question.find({ author: userId })
+      .sort({ views: -1 })
+      .populate<{ author: IUser; tags: ITag[] }>([
+        { path: "tags", model: Tag, select: "_id name" },
+        { path: "author", model: User, select: "_id clerkId name picture" },
+      ])
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+
+    return { totalQuestions, questions };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getUserAnswers = async (params: GetUserStatsParams) => {
+  try {
+    await connectDB();
+
+    const { userId, page = 1, pageSize = 10 } = params;
+    const totalAnswers = await Answer.countDocuments({ author: userId });
+
+    const answers = await Answer.find({ author: userId })
+      .sort({ views: -1 })
+      .populate<{
+        author: IUser;
+        question: IQuestion;
+      }>([
+        {
+          path: "author",
+          model: User,
+          select: "_id clerkId name picture",
+        },
+        { path: "question", model: Question, select: "_id title" },
+      ])
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+
+    return { totalAnswers, answers };
   } catch (error) {
     console.log(error);
     throw error;

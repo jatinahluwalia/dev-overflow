@@ -3,12 +3,9 @@ import Filter from "./Filter";
 import { getAllAnswers } from "@/lib/actions/answer.action";
 import Link from "next/link";
 import Image from "next/image";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import ParseHTML from "./ParseHTML";
 import Votes from "./Votes";
-
-dayjs.extend(relativeTime);
+import { dateFormatter } from "@/lib/utils";
 
 interface Props {
   questionId: string;
@@ -47,7 +44,7 @@ const AllAnswers = async ({ questionId, totalAnswers, userId }: Props) => {
                     </p>
                     <p className="small-regular text-light400_light500 mt-0.5 line-clamp-1">
                       <span className="max-sm:hidden"> - </span> answered{" "}
-                      {dayjs(answer.createdAt).fromNow()}
+                      {dateFormatter(answer.createdAt)}
                     </p>
                   </div>
                 </Link>

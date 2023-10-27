@@ -6,7 +6,7 @@ export const connectDB = async () => {
   try {
     set("strictQuery", true);
     if (!process.env.MONGODB_URL) return console.log("Missing database url");
-    if (isConnected) return console.log("DB already connected.");
+    if (isConnected) return;
 
     await connect(process.env.MONGODB_URL, { dbName: "DevFlow" });
     console.log("DB Connected");

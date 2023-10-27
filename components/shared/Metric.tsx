@@ -28,12 +28,12 @@ const Metric = ({
           width={16}
           height={16}
           alt={alt}
-          className={`object-contain ${href ? "rounded-full" : ""}`}
+          className={`object-contain ${isAuthor ? "rounded-full" : ""}`}
         />
-        <p className={`${textStyles} flex items-center gap-1`}>
+        <p className={`${textStyles} flex items-center gap-1 leading-none`}>
           {value}
           <span
-            className={`small-regular line-clamp-1 ${
+            className={`small-regular line-clamp-1 leading-none ${
               isAuthor ? "max-sm:hidden" : ""
             }`}
           >

@@ -1,10 +1,8 @@
 import Metric from "@/components/shared/Metric";
 import { getQuestionById } from "@/lib/actions/question.action";
-import { formatter } from "@/lib/utils";
+import { numberFormatter, dateFormatter } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { redirect } from "next/navigation";
 import ParseHTML from "@/components/shared/ParseHTML";
 import RenderTag from "@/components/shared/RenderTag";
@@ -13,8 +11,6 @@ import { auth } from "@clerk/nextjs";
 import { getUserById } from "@/lib/actions/user.action";
 import AllAnswers from "@/components/shared/AllAnswers";
 import Votes from "@/components/shared/Votes";
-
-dayjs.extend(relativeTime);
 
 interface Props {
   params: {
@@ -69,21 +65,21 @@ const Page = async ({ params: { id } }: Props) => {
         <Metric
           imgUrl="/assets/icons/like.svg"
           alt="clock icon"
-          value={` aksed ${dayjs(result.createdAt).fromNow()}`}
+          value={` aksed ${dateFormatter(result.createdAt)}`}
           title=""
           textStyles="small-medium text-dark400_light800"
         />
         <Metric
           imgUrl="/assets/icons/message.svg"
           alt="message"
-          value={formatter(result.answers?.length || 0)}
+          value={numberFormatter(result.answers?.length || 0)}
           title=" Answers"
           textStyles="small-medium text-dark400_light800"
         />
         <Metric
           imgUrl="/assets/icons/eye.svg"
           alt="eye"
-          value={formatter(result.views || 0)}
+          value={numberFormatter(result.views || 0)}
           title="Views"
           textStyles="small-medium text-dark400_light800"
         />

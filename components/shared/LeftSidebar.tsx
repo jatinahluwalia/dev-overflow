@@ -70,7 +70,7 @@ const MobileNav = () => {
             </Button>
           </Link>
 
-          <Link href={"/sign-in"}>
+          <Link href={"/sign-up"}>
             <Button className="btn-tertiary text-dark400_light900 light-border-2 small-medium min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
               <Image
                 src={"/assets/icons/sign-up.svg"}
