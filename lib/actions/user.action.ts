@@ -76,7 +76,28 @@ export const deleteUser = async (params: DeleteUserParams) => {
 export const getAllUsers = async (params: GetAllUsersParams) => {
   try {
     await connectDB();
-    const { page = 1, pageSize = 20, searchQuery = "" } = params;
+    const { page = 1, pageSize = 20, searchQuery = "", filter } = params;
+
+    let sortOptions = {};
+
+    switch (filter) {
+      case "new_users": {
+        sortOptions = { createdAt: -1 };
+        break;
+      }
+      case "old_users": {
+        sortOptions = { createdAt: 1 };
+        break;
+      }
+      case "top_contributors": {
+        sortOptions = { reputation: -1 };
+        break;
+      }
+
+      default:
+        break;
+    }
+
     const users = await User.find({
       $or: [
         { name: { $regex: new RegExp(searchQuery, "i") } },
@@ -85,7 +106,7 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
     })
       .skip((page - 1) * pageSize)
       .limit(pageSize)
-      .sort({ createdAt: -1 });
+      .sort(sortOptions);
     return { users };
   } catch (error) {
     console.log(error);
@@ -124,35 +145,61 @@ export const getSavedQuestions = async (params: GetSavedQuestionsParams) => {
   try {
     await connectDB();
 
-    const { clerkId, page = 1, pageSize = 20, searchQuery = "" } = params;
+    const { clerkId, page = 1, pageSize = 10, searchQuery = "" } = params;
 
-    const user = await getUserById({ userId: clerkId });
+    const user = await User.findOne({ clerkId }).populate<{
+      saved: (Omit<IQuestion, "author" | "tags"> & {
+        author: IUser;
+        tags: ITag[];
+      })[];
+    }>({
+      path: "saved",
+      match: { title: { $regex: new RegExp(searchQuery, "i") } },
+
+      options: {
+        skip: (page - 1) * pageSize,
+        limit: pageSize,
+        populate: [
+          {
+            path: "author",
+            model: User,
+            select: "_id clerkId name picture",
+          },
+          {
+            path: "tags",
+            model: Tag,
+          },
+        ],
+      },
+    });
 
     if (!user) throw new Error("User not found");
 
-    const questionIds = user.saved;
+    const questions = user.saved;
 
-    const questions = await Question.find({
-      _id: { $in: questionIds },
-      $or: [
-        { title: { $regex: new RegExp(searchQuery, "i") } },
-        { content: { $regex: new RegExp(searchQuery, "i") } },
-      ],
-    })
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
-      .sort({ createdAt: -1 })
-      .populate<{ author: IUser; tags: ITag[] }>([
-        {
-          path: "author",
-          model: User,
-          select: "_id clerkId name picture",
-        },
-        {
-          path: "tags",
-          model: Tag,
-        },
-      ]);
+    // const questionIds = user.saved;
+
+    // const questions = await Question.find({
+    //   _id: { $in: questionIds },
+    //   $or: [
+    //     { title: { $regex: new RegExp(searchQuery, "i") } },
+    //     { content: { $regex: new RegExp(searchQuery, "i") } },
+    //   ],
+    // })
+    //   .skip((page - 1) * pageSize)
+    //   .limit(pageSize)
+    //   .sort({ createdAt: -1 })
+    //   .populate<{ author: IUser; tags: ITag[] }>([
+    //     {
+    //       path: "author",
+    //       model: User,
+    //       select: "_id clerkId name picture",
+    //     },
+    //     {
+    //       path: "tags",
+    //       model: Tag,
+    //     },
+    //   ]);
 
     return { questions };
   } catch (error) {

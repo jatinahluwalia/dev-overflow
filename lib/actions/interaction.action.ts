@@ -20,7 +20,7 @@ export const viewQuestion = async (params: ViewQuestionParams) => {
         question: questionId,
       });
 
-      if (!existingInteraction) return;
+      if (existingInteraction) return;
 
       await Interaction.create({
         user: userId,

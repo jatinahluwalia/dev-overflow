@@ -45,8 +45,8 @@ const Votes = ({
   };
 
   useEffect(() => {
-    viewQuestion({ questionId: itemId, userId });
-  }, [pathname, router, itemId, userId]);
+    if (type === "question") viewQuestion({ questionId: itemId, userId });
+  }, [pathname, router, itemId, userId, type]);
 
   const handleVote = async (action: "upvote" | "downvote") => {
     switch (type) {

@@ -10,7 +10,7 @@ import {
 const interactionSchema = new Schema(
   {
     user: { type: String, ref: "User", required: true },
-    action: { type: String, required: true, enum: ["view"] },
+    action: { type: String, required: true },
     question: { type: String, ref: "Question" },
     answer: { type: String, ref: "Answer" },
     tags: [{ type: String, ref: "Tag" }],

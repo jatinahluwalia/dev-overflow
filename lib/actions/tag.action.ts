@@ -29,10 +29,17 @@ export const getTopInteractedTags = async (
     throw error;
   }
 };
-export const getAllTags = async (_params: GetAllTagsParams) => {
+export const getAllTags = async (params: GetAllTagsParams) => {
   try {
     await connectDB();
-    const tags = await Tag.find({});
+
+    const { page = 1, pageSize = 10, searchQuery = "" } = params;
+
+    const tags = await Tag.find({
+      name: { $regex: new RegExp(searchQuery, "i") },
+    })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
     return { tags };
   } catch (error) {
     console.log(error);

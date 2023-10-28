@@ -16,17 +16,40 @@ import {
 import User, { IUser } from "@/database/user.model";
 import Answer from "@/database/answer.model";
 import Interaction from "@/database/interaction.model";
+import { FilterQuery } from "mongoose";
+import { getMongoId } from "../auth";
 
 export const getQuestions = async (params: GetQuestionsParams) => {
   try {
     await connectDB();
-    const { page = 1, pageSize = 10, searchQuery = "" } = params;
-    const questions = await Question.find({
+    const { page = 1, pageSize = 10, searchQuery = "", filter } = params;
+
+    const query: FilterQuery<IQuestion> = {
       $or: [
         { title: { $regex: new RegExp(searchQuery, "i") } },
         { content: { $regex: new RegExp(searchQuery, "i") } },
       ],
-    })
+    };
+
+    if (filter === "unanswered") query.answers = { $size: 0 };
+
+    let sortOptions = {};
+
+    switch (filter) {
+      case "newest": {
+        sortOptions = { createdAt: -1 };
+        break;
+      }
+      case "frequent": {
+        sortOptions = { views: -1 };
+        break;
+      }
+
+      default:
+        break;
+    }
+
+    const questions = await Question.find(query)
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .populate<{
@@ -39,7 +62,7 @@ export const getQuestions = async (params: GetQuestionsParams) => {
         },
         { path: "author", model: User },
       ])
-      .sort({ createdAt: -1 });
+      .sort(sortOptions);
     return { questions };
   } catch (error) {
     console.log(error);
@@ -250,13 +273,13 @@ export const editQuestion = async (params: EditQuestionParams) => {
     await connectDB();
     const { path, questionId, content, title } = params;
 
-    const updatedQuestion = await Question.findByIdAndUpdate(
-      questionId,
-      { content, title },
-      { new: true },
+    const updatedQuestion = await Question.findOneAndUpdate(
+      { _id: questionId, author: getMongoId() },
+      { title, content },
     );
 
-    if (!updatedQuestion) throw new Error("Question not found");
+    if (!updatedQuestion)
+      throw new Error("Either question not found or you are not authorized");
 
     revalidatePath(path);
   } catch (error) {

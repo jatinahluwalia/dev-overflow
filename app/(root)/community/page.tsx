@@ -7,7 +7,10 @@ import { SearchParamsProps } from "@/types";
 import Link from "next/link";
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
-  const result = await getAllUsers({ searchQuery: searchParams.q });
+  const result = await getAllUsers({
+    searchQuery: searchParams.q,
+    filter: searchParams.filter,
+  });
 
   return (
     <>
@@ -27,7 +30,6 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
       </div>
       <section className="mt-12 flex flex-wrap gap-4">
         {result.users.length > 0 ? (
-          // @ts-expect-error
           result.users.map((user) => <UserCard key={user.name} user={user} />)
         ) : (
           <div className="paragraph-regular text-dark200_light800 mx-auto max-w-4xl text-center">

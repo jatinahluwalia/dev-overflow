@@ -2,15 +2,13 @@ import QuestionCard from "@/components/cards/QuestionCard";
 import NoResult from "@/components/shared/NoResult";
 import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { getQuestionsByTag } from "@/lib/actions/question.action";
+import { URLProps } from "@/types";
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
-
-const Home = async ({ params: { id } }: Props) => {
-  const result = await getQuestionsByTag({ tagId: id });
+const Home = async ({ params: { id }, searchParams }: URLProps) => {
+  const result = await getQuestionsByTag({
+    tagId: id,
+    searchQuery: searchParams.q,
+  });
   return (
     <>
       <h1 className="text-dark100_light900 h1-bold">{`${result.tag.name[0].toUpperCase()}${result.tag.name.slice(
