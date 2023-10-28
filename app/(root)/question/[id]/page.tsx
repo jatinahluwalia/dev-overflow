@@ -11,14 +11,9 @@ import { auth } from "@clerk/nextjs";
 import { getUserById } from "@/lib/actions/user.action";
 import AllAnswers from "@/components/shared/AllAnswers";
 import Votes from "@/components/shared/Votes";
+import { URLProps } from "@/types";
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
-
-const Page = async ({ params: { id } }: Props) => {
+const Page = async ({ params: { id }, searchParams }: URLProps) => {
   const result = await getQuestionById({ questionId: id });
   if (!result) redirect("/");
   const { userId } = auth();
@@ -100,6 +95,8 @@ const Page = async ({ params: { id } }: Props) => {
         questionId={id}
         userId={mongoUser?.id}
         totalAnswers={result.answers.length}
+        filter={searchParams.filter}
+        page={+(searchParams.page || "1")}
       />
 
       {mongoUser && (

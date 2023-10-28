@@ -33,12 +33,27 @@ export const createAnswer = async (params: CreateAnswerParams) => {
 export const getAllAnswers = async (params: GetAnswersParams) => {
   try {
     await connectDB();
-    const {
-      questionId,
-      page = 1,
-      pageSize = 20,
-      sortBy = "createdAt",
-    } = params;
+    const { questionId, page = 1, pageSize = 20, sortBy } = params;
+
+    let sortOptions = {};
+
+    switch (sortBy) {
+      case "highestUpvotes":
+        sortOptions = { upvotes: -1 };
+        break;
+      case "lowestUpvotes":
+        sortOptions = { upvotes: 1 };
+        break;
+      case "recent":
+        sortOptions = { createdAt: -1 };
+        break;
+      case "old":
+        sortOptions = { createdAt: 1 };
+        break;
+
+      default:
+        break;
+    }
 
     const answers = await Answer.find({ question: questionId })
       .populate<{
@@ -48,9 +63,9 @@ export const getAllAnswers = async (params: GetAnswersParams) => {
         model: User,
         select: "_id clerkId name picture",
       })
-      .sort({ [sortBy]: -1 })
       .skip((page - 1) * pageSize)
-      .limit(pageSize);
+      .limit(pageSize)
+      .sort(sortOptions);
 
     return { answers };
   } catch (error) {

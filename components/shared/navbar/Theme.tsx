@@ -23,7 +23,7 @@ const Theme = () => {
     <Menubar className="relative border-none bg-transparent shadow-none">
       <MenubarMenu>
         <MenubarTrigger asChild>
-          <Button className="no-focus cursor-pointer bg-light-900 transition-all data-[state=open]:bg-light-800 dark:bg-dark-200 dark:hover:bg-dark-400 dark:data-[state=open]:bg-dark-400">
+          <Button className="no-focus cursor-pointer bg-light-900 transition-all hover:bg-light-800 data-[state=open]:bg-light-800 dark:bg-dark-200 dark:hover:bg-dark-400 dark:data-[state=open]:bg-dark-400">
             {mode === "light" ? (
               <Image
                 src={"/assets/icons/sun.svg"}
