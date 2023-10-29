@@ -1,13 +1,16 @@
 import QuestionCard from "@/components/cards/QuestionCard";
 import NoResult from "@/components/shared/NoResult";
+import Pagination from "@/components/shared/Pagination";
 import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { getQuestionsByTag } from "@/lib/actions/question.action";
 import { URLProps } from "@/types";
 
 const Home = async ({ params: { id }, searchParams }: URLProps) => {
+  const page = +(searchParams.page || "1");
   const result = await getQuestionsByTag({
     tagId: id,
     searchQuery: searchParams.q,
+    page,
   });
   return (
     <>
@@ -47,6 +50,9 @@ const Home = async ({ params: { id }, searchParams }: URLProps) => {
             linkTitle="Ask a Question"
           />
         )}
+      </div>
+      <div className="mt-10">
+        <Pagination isNext={result.isNext} pageNumber={page} />
       </div>
     </>
   );

@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { formQueryURL } from "@/lib/utils";
+import { useEffect } from "react";
 
 interface Props {
   pageNumber: number;
@@ -23,6 +24,10 @@ const Pagination = ({ pageNumber = 1, isNext = false }: Props) => {
     });
     router.push(`${pathname}?${queries}`);
   };
+
+  useEffect(() => {}, []);
+
+  if (pageNumber === 1 && !isNext) return null;
 
   return (
     <div className="flex w-full items-center justify-center gap-2">

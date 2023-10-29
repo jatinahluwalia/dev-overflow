@@ -17,11 +17,6 @@ const tagSchema = new Schema(
 );
 
 export type ITag = Document & InferSchemaType<typeof tagSchema>;
-// & {
-//   _id: string;
-//   questions: string[];
-//   followers: string[];
-// };
 
 const Tag: Model<ITag> = models.Tag || model("Tag", tagSchema);
 

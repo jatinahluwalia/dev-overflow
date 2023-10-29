@@ -19,11 +19,24 @@ export const createAnswer = async (params: CreateAnswerParams) => {
     const { question, content, author, path } = params;
 
     const newAnswer = await Answer.create({ content, author, question });
-    await Question.findByIdAndUpdate(question, {
+
+    const questionDoc = await Question.findByIdAndUpdate(question, {
       $push: { answers: newAnswer.id },
     });
+
+    if (!questionDoc) throw new Error("Question not found");
+
+    await Interaction.create({
+      user: author,
+      action: "answer",
+      question,
+      tags: questionDoc.tags,
+      answer: newAnswer.id,
+    });
+
+    await User.findByIdAndUpdate(author, { $inc: { reputation: 10 } });
+
     revalidatePath(path);
-    return "Created";
   } catch (error) {
     console.log(error);
     throw error;
@@ -33,7 +46,7 @@ export const createAnswer = async (params: CreateAnswerParams) => {
 export const getAllAnswers = async (params: GetAnswersParams) => {
   try {
     await connectDB();
-    const { questionId, page = 1, pageSize = 20, sortBy } = params;
+    const { questionId, page = 1, pageSize = 10, sortBy } = params;
 
     let sortOptions = {};
 
@@ -67,7 +80,13 @@ export const getAllAnswers = async (params: GetAnswersParams) => {
       .limit(pageSize)
       .sort(sortOptions);
 
-    return { answers };
+    const numberOfAnswers = await Answer.countDocuments({
+      question: questionId,
+    });
+
+    const isNext = numberOfAnswers > page * pageSize;
+
+    return { answers, isNext };
   } catch (error) {
     console.log(error);
     throw error;
@@ -99,6 +118,14 @@ export const upvoteAnswer = async (params: AnswerVoteParams) => {
 
     if (!answer) throw new Error("Answer not found");
 
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasupVoted ? -2 : 2 },
+    });
+
+    await User.findByIdAndUpdate(answer.author, {
+      $inc: { reputation: hasupVoted ? -10 : 10 },
+    });
+
     revalidatePath(path);
   } catch (error) {
     console.log(error);
@@ -129,6 +156,14 @@ export const downvoteAnswer = async (params: AnswerVoteParams) => {
     });
 
     if (!answer) throw new Error("Answer not found");
+
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasdownVoted ? -2 : 2 },
+    });
+
+    await User.findByIdAndUpdate(answer.author, {
+      $inc: { reputation: hasdownVoted ? -10 : 10 },
+    });
 
     revalidatePath(path);
   } catch (error) {

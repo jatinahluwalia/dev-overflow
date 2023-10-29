@@ -63,7 +63,12 @@ export const getQuestions = async (params: GetQuestionsParams) => {
         { path: "author", model: User },
       ])
       .sort(sortOptions);
-    return { questions };
+
+    const numberOfDocuments = await Question.countDocuments(query);
+
+    const isNext = numberOfDocuments > page * pageSize;
+
+    return { questions, isNext };
   } catch (error) {
     console.log(error);
     throw error;
@@ -85,15 +90,24 @@ export const createQuestion = async (params: CreateQuestionParams) => {
     for (const tag of tags) {
       const existingTag = await Tag.findOneAndUpdate(
         { name: { $regex: new RegExp(`^${tag}$`, "i") } },
-        { $setOnInsert: { name: tag }, $push: { questions: question._id } },
+        { $setOnInsert: { name: tag }, $push: { questions: question.id } },
         { upsert: true, new: true },
       );
-      tagDocs.push(existingTag._id);
+      tagDocs.push(existingTag.id);
     }
 
-    await Question.findByIdAndUpdate(question._id, {
+    await Question.findByIdAndUpdate(question.id, {
       $push: { tags: { $each: tagDocs } },
     });
+
+    await Interaction.create({
+      user: author,
+      action: "ask_question",
+      question: question.id,
+      tags: tagDocs,
+    });
+
+    await User.findByIdAndUpdate(author, { $inc: { reputation: 5 } });
 
     revalidatePath(path);
   } catch (error) {
@@ -151,7 +165,13 @@ export const upvoteQuestion = async (params: QuestionVoteParams) => {
       throw new Error("Question not found");
     }
 
-    // TODO: Increase author's reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasupVoted ? -1 : 1 },
+    });
+
+    await User.findByIdAndUpdate(question.author, {
+      $inc: { reputation: hasupVoted ? -10 : 10 },
+    });
 
     revalidatePath(path);
   } catch (error) {
@@ -185,7 +205,13 @@ export const downvoteQuestion = async (params: QuestionVoteParams) => {
       throw new Error("Question not found");
     }
 
-    // TODO: Increase author's reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasdownVoted ? -1 : 1 },
+    });
+
+    await User.findByIdAndUpdate(question.author, {
+      $inc: { reputation: hasdownVoted ? -10 : 10 },
+    });
 
     revalidatePath(path);
   } catch (error) {
@@ -200,48 +226,84 @@ export const getQuestionsByTag = async (params: GetQuestionsByTagIdParams) => {
 
     const { tagId, page = 1, pageSize = 10, searchQuery = "" } = params;
 
-    const tag = await Tag.findById(tagId)
-      .populate<{
-        questions: (IQuestion & {
-          tags: ITag[];
-          author: IUser;
-        })[];
-      }>({
-        path: "questions",
-        model: Question,
-        options: {
-          sort: { createdAt: -1 },
-        },
-        match: {
-          $or: [
-            {
-              title: { $regex: new RegExp(searchQuery, "i") },
-            },
-            {
-              content: { $regex: new RegExp(searchQuery, "i") },
-            },
-          ],
-        },
-        populate: [
-          {
-            path: "author",
-            model: User,
-            select: "_id name picture clerkId",
-          },
-          {
-            path: "tags",
-            model: Tag,
-            select: "_id name",
-          },
-        ],
-      })
-      .skip((page - 1) * pageSize)
-      .limit(pageSize);
+    // const tag = await Tag.findById(tagId)
+    //   .populate<{
+    //     questions: (IQuestion & {
+    //       tags: ITag[];
+    //       author: IUser;
+    //     })[];
+    //   }>({
+    //     path: "questions",
+    //     model: Question,
+    //     options: {
+    //       sort: { createdAt: -1 },
+    //     },
+    //     match: {
+    //       $or: [
+    //         {
+    //           title: { $regex: new RegExp(searchQuery, "i") },
+    //         },
+    //         {
+    //           content: { $regex: new RegExp(searchQuery, "i") },
+    //         },
+    //       ],
+    //     },
+    //     populate: [
+    //       {
+    //         path: "author",
+    //         model: User,
+    //         select: "_id name picture clerkId",
+    //       },
+    //       {
+    //         path: "tags",
+    //         model: Tag,
+    //         select: "_id name",
+    //       },
+    //     ],
+    //   })
+    //   .skip((page - 1) * pageSize)
+    //   .limit(pageSize);
+    // if (!tag) throw new Error("Tag not found");
+
+    // const questions = tag.questions;
+
+    const tag = await Tag.findById(tagId);
+
     if (!tag) throw new Error("Tag not found");
 
-    const questions = tag.questions;
+    const query: FilterQuery<IQuestion> = {
+      $or: [
+        {
+          title: { $regex: new RegExp(searchQuery, "i") },
+        },
+        {
+          content: { $regex: new RegExp(searchQuery, "i") },
+        },
+      ],
+      tags: tagId,
+    };
 
-    return { tag, questions };
+    const questions = await Question.find(query)
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .populate<{ author: IUser; tags: ITag[] }>([
+        {
+          path: "author",
+          model: User,
+          select: "_id name picture clerkId",
+        },
+        {
+          path: "tags",
+          model: Tag,
+          select: "_id name",
+        },
+      ]);
+
+    const numberOfQuestions = await Question.countDocuments(query);
+
+    const isNext = numberOfQuestions > page * pageSize;
+
+    return { tag, questions, isNext };
   } catch (error) {
     console.log(error);
     throw error;

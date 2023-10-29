@@ -3,8 +3,8 @@
 import User from "@/database/user.model";
 import { connectDB } from "../mongoose";
 import { GetAllTagsParams, GetTopInteractedTagsParams } from "./shared.types";
-import Tag from "@/database/tag.model";
-import { Types } from "mongoose";
+import Tag, { ITag } from "@/database/tag.model";
+import { FilterQuery, Types } from "mongoose";
 
 export const getTopInteractedTags = async (
   params: GetTopInteractedTagsParams,
@@ -55,13 +55,20 @@ export const getAllTags = async (params: GetAllTagsParams) => {
         break;
     }
 
-    const tags = await Tag.find({
+    const query: FilterQuery<ITag> = {
       name: { $regex: new RegExp(searchQuery, "i") },
-    })
+    };
+
+    const tags = await Tag.find(query)
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .sort(sortOptions);
-    return { tags };
+
+    const numberOfTags = await Tag.countDocuments(query);
+
+    const isNext = numberOfTags > page * pageSize;
+
+    return { tags, isNext };
   } catch (error) {
     console.log(error);
     throw error;

@@ -1,6 +1,7 @@
 import { getUserQuestions } from "@/lib/actions/user.action";
 import { SearchParamsProps } from "@/types";
 import QuestionCard from "../cards/QuestionCard";
+import Pagination from "./Pagination";
 
 interface Props extends SearchParamsProps {
   userId: string;
@@ -8,7 +9,8 @@ interface Props extends SearchParamsProps {
 }
 
 const QuestionsTab = async ({ userId, searchParams, clerkId }: Props) => {
-  const result = await getUserQuestions({ userId });
+  const page = +(searchParams.page || "1");
+  const result = await getUserQuestions({ userId, page });
   return (
     <>
       {result.questions.map((item) => (
@@ -25,6 +27,9 @@ const QuestionsTab = async ({ userId, searchParams, clerkId }: Props) => {
           clerkId={clerkId}
         />
       ))}
+      <div className="mt-10">
+        <Pagination isNext={result.isNext} pageNumber={page} />
+      </div>
     </>
   );
 };

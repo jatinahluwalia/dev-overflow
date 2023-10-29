@@ -16,6 +16,7 @@ import { revalidatePath } from "next/cache";
 import Question, { IQuestion } from "@/database/question.model";
 import Tag, { ITag } from "@/database/tag.model";
 import Answer from "@/database/answer.model";
+import { FilterQuery } from "mongoose";
 
 export const getUserById = async ({ userId }: { userId: string }) => {
   try {
@@ -76,7 +77,7 @@ export const deleteUser = async (params: DeleteUserParams) => {
 export const getAllUsers = async (params: GetAllUsersParams) => {
   try {
     await connectDB();
-    const { page = 1, pageSize = 20, searchQuery = "", filter } = params;
+    const { page = 1, pageSize = 10, searchQuery = "", filter } = params;
 
     let sortOptions = {};
 
@@ -98,16 +99,23 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
         break;
     }
 
-    const users = await User.find({
+    const query: FilterQuery<IUser> = {
       $or: [
         { name: { $regex: new RegExp(searchQuery, "i") } },
         { username: { $regex: new RegExp(searchQuery, "i") } },
       ],
-    })
+    };
+
+    const users = await User.find(query)
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .sort(sortOptions);
-    return { users };
+
+    const numberOfUsers = await User.countDocuments(query);
+
+    const isNext = numberOfUsers > page * pageSize;
+
+    return { users, isNext };
   } catch (error) {
     console.log(error);
     throw error;
@@ -148,7 +156,7 @@ export const getSavedQuestions = async (params: GetSavedQuestionsParams) => {
     const {
       clerkId,
       page = 1,
-      pageSize = 10,
+      pageSize = 2,
       searchQuery = "",
       filter,
     } = params;
@@ -175,62 +183,69 @@ export const getSavedQuestions = async (params: GetSavedQuestionsParams) => {
         break;
     }
 
-    const user = await User.findOne({ clerkId }).populate<{
-      saved: (Omit<IQuestion, "author" | "tags"> & {
-        author: IUser;
-        tags: ITag[];
-      })[];
-    }>({
-      path: "saved",
-      match: { title: { $regex: new RegExp(searchQuery, "i") } },
+    const user = await User.findOne({ clerkId });
+    // .populate<{
+    //   saved: (Omit<IQuestion, "author" | "tags"> & {
+    //     author: IUser;
+    //     tags: ITag[];
+    //   })[];
+    // }>({
+    //   path: "saved",
+    //   match: { title: { $regex: new RegExp(searchQuery, "i") } },
+    //   options: {
 
-      options: {
-        skip: (page - 1) * pageSize,
-        limit: pageSize,
-        populate: [
-          {
-            path: "author",
-            model: User,
-            select: "_id clerkId name picture",
-          },
-          {
-            path: "tags",
-            model: Tag,
-          },
-        ],
-        sort: sortOptions,
-      },
-    });
+    //     skip: (page - 1) * pageSize,
+    //     limit: pageSize,
+    //     populate: [
+    //       {
+    //         path: "author",
+    //         model: User,
+    //         select: "_id clerkId name picture",
+    //       },
+    //       {
+    //         path: "tags",
+    //         model: Tag,
+    //       },
+    //     ],
+    //     sort: sortOptions,
+    //   },
+    // });
 
     if (!user) throw new Error("User not found");
 
-    const questions = user.saved;
+    // const questions = user.saved;
 
-    // const questionIds = user.saved;
+    const questionIds = user.saved;
 
-    // const questions = await Question.find({
-    //   _id: { $in: questionIds },
-    //   $or: [
-    //     { title: { $regex: new RegExp(searchQuery, "i") } },
-    //     { content: { $regex: new RegExp(searchQuery, "i") } },
-    //   ],
-    // })
-    //   .skip((page - 1) * pageSize)
-    //   .limit(pageSize)
-    //   .sort({ createdAt: -1 })
-    //   .populate<{ author: IUser; tags: ITag[] }>([
-    //     {
-    //       path: "author",
-    //       model: User,
-    //       select: "_id clerkId name picture",
-    //     },
-    //     {
-    //       path: "tags",
-    //       model: Tag,
-    //     },
-    //   ]);
+    const query: FilterQuery<IQuestion> = {
+      _id: { $in: questionIds },
+      $or: [
+        { title: { $regex: new RegExp(searchQuery, "i") } },
+        { content: { $regex: new RegExp(searchQuery, "i") } },
+      ],
+    };
 
-    return { questions };
+    const questions = await Question.find(query)
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .sort(sortOptions)
+      .populate<{ author: IUser; tags: ITag[] }>([
+        {
+          path: "author",
+          model: User,
+          select: "_id clerkId name picture",
+        },
+        {
+          path: "tags",
+          model: Tag,
+        },
+      ]);
+
+    const numberOfDocuments = await Question.countDocuments(query);
+
+    const isNext = numberOfDocuments > page * pageSize;
+
+    return { questions, isNext };
   } catch (error) {
     console.log(error);
     throw error;
@@ -248,6 +263,20 @@ export const getUserInfo = async (params: GetUserByIdParams) => {
 
     const totalQuestions = await Question.countDocuments({ author: user.id });
     const totalAnswers = await Answer.countDocuments({ author: user.id });
+
+    const [questionUpvotes] = await Question.aggregate([
+      {
+        $match: { author: user.id },
+      },
+      {
+        $project: { _id: 0, upvotes: { $size: "$upvotes" } },
+      },
+      {
+        $group: { _id: null, totalUpvotes: { $sum: "$upvotes" } },
+      },
+    ]);
+
+    console.log({ questionUpvotes });
 
     if (!user) throw new Error("User not found");
 
@@ -274,7 +303,9 @@ export const getUserQuestions = async (params: GetUserStatsParams) => {
       .skip((page - 1) * pageSize)
       .limit(pageSize);
 
-    return { totalQuestions, questions };
+    const isNext = totalQuestions > page * pageSize;
+
+    return { totalQuestions, questions, isNext };
   } catch (error) {
     console.log(error);
     throw error;
@@ -285,7 +316,7 @@ export const getUserAnswers = async (params: GetUserStatsParams) => {
   try {
     await connectDB();
 
-    const { userId, page = 1, pageSize = 10 } = params;
+    const { userId, page = 1, pageSize = 5 } = params;
     const totalAnswers = await Answer.countDocuments({ author: userId });
 
     const answers = await Answer.find({ author: userId })
@@ -304,7 +335,9 @@ export const getUserAnswers = async (params: GetUserStatsParams) => {
       .skip((page - 1) * pageSize)
       .limit(pageSize);
 
-    return { totalAnswers, answers };
+    const isNext = totalAnswers > page * pageSize;
+
+    return { totalAnswers, answers, isNext };
   } catch (error) {
     console.log(error);
     throw error;
