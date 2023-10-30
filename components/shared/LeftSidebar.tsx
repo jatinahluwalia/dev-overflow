@@ -33,7 +33,7 @@ const MobileNav = () => {
                 isActive
                   ? "primary-gradient text-light-900"
                   : "text-dark300_light900"
-              } flex items-center justify-start gap-4 rounded-lg bg-transparent p-4 hover:bg-primary-500/5`}
+              } flex items-center justify-start gap-4 rounded-lg bg-transparent p-4 transition-[transform] hover:bg-primary-500/5 active:scale-90`}
             >
               <Image
                 src={item.imgURL}

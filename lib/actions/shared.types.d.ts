@@ -1,4 +1,5 @@
 import { IUser } from "@/mongodb";
+import { BadgeCriteriaType } from "@/types";
 
 export interface CreateQuestionParams {
   title: string;
@@ -155,3 +156,8 @@ export interface GetUserStatsParams {
 export interface DeleteUserParams {
   clerkId: string;
 }
+
+export type CriteriaType = {
+  type: BadgeCriteriaType;
+  count: number;
+}[];

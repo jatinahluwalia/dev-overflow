@@ -4,7 +4,8 @@ import { deleteAnswer } from "@/lib/actions/answer.action";
 import { deleteQuestion } from "@/lib/actions/question.action";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Props {
   type: "question" | "answer";
@@ -13,13 +14,24 @@ interface Props {
 
 const EditDeleteActions = ({ itemId, type }: Props) => {
   const pathname = usePathname();
-  const handleEdit = () => {};
+  const router = useRouter();
+  const handleEdit = () => {
+    router.push(`/question/edit/${itemId}`);
+  };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (type === "question") {
-      await deleteQuestion({ questionId: itemId, path: pathname });
+      toast.promise(deleteQuestion({ questionId: itemId, path: pathname }), {
+        loading: "Deleting question...",
+        success: "Question deleted successfully.",
+        error: (error) => error.message || "Some error occurred.",
+      });
     } else if (type === "answer") {
-      await deleteAnswer({ answerId: itemId, path: pathname });
+      toast.promise(deleteAnswer({ answerId: itemId, path: pathname }), {
+        loading: "Deleting answer...",
+        success: "Answer deleted successfully.",
+        error: (error) => error.message || "Some error occurred.",
+      });
     }
   };
   return (
@@ -31,8 +43,8 @@ const EditDeleteActions = ({ itemId, type }: Props) => {
             alt="edit"
             width={14}
             height={14}
-            className="cursor-pointer object-contain"
-            onClick={() => handleEdit()}
+            className="cursor-pointer object-contain transition-all active:scale-90"
+            onClick={handleEdit}
           />
         </Link>
       )}
@@ -41,8 +53,8 @@ const EditDeleteActions = ({ itemId, type }: Props) => {
         alt="Delete"
         width={14}
         height={14}
-        className="cursor-pointer object-contain"
-        onClick={() => handleDelete()}
+        className="cursor-pointer object-contain transition-all active:scale-90"
+        onClick={handleDelete}
       />
     </div>
   );

@@ -17,6 +17,7 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { updateUser } from "@/lib/actions/user.action";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Props {
   clerkId: string;
@@ -32,19 +33,31 @@ const ProfileForm = ({ clerkId, user }: Props) => {
     defaultValues: {
       name: parsedUser.name || "",
       username: parsedUser.username || "",
-      bio: parsedUser.username || "",
+      bio: parsedUser.bio || "",
       portfolioWebsite: parsedUser.portfolioWebsite || "",
       location: parsedUser.location || "",
     },
     mode: "all",
   });
-  const onSubmit = async (values: UserSchema) => {
-    try {
-      await updateUser({ clerkId, path: pathname, updateData: values });
-      router.back();
-    } catch (error) {
-      console.log(error);
-    }
+  const onSubmit = (values: UserSchema) => {
+    return new Promise<void>((resolve) => {
+      toast.promise(
+        updateUser({ clerkId, path: pathname, updateData: values }),
+        {
+          success: () => {
+            router.back();
+            return "Profile edited successfully.";
+          },
+          loading: "Editing profile...",
+          error: (error) => {
+            return error.message || "Some error occurred.";
+          },
+          finally: () => {
+            resolve();
+          },
+        },
+      );
+    });
   };
   return (
     <Form {...form}>
@@ -147,7 +160,7 @@ const ProfileForm = ({ clerkId, user }: Props) => {
         <div className="mt-7 flex justify-end">
           <Button
             type="submit"
-            className="primary-gradient w-fit text-light-900"
+            className="primary-gradient w-fit text-light-900 transition-all active:scale-90"
             disabled={form.formState.isSubmitting}
           >
             {form.formState.isSubmitting ? "Saving" : "Save"}

@@ -4,6 +4,7 @@ import User, { IUser } from "@/database/user.model";
 import { connectDB } from "../mongoose";
 import {
   CreateUserParams,
+  CriteriaType,
   DeleteUserParams,
   GetAllUsersParams,
   GetSavedQuestionsParams,
@@ -17,6 +18,7 @@ import Question, { IQuestion } from "@/database/question.model";
 import Tag, { ITag } from "@/database/tag.model";
 import Answer from "@/database/answer.model";
 import { FilterQuery } from "mongoose";
+import { assignBadges } from "../utils";
 
 export const getUserById = async ({ userId }: { userId: string }) => {
   try {
@@ -156,7 +158,7 @@ export const getSavedQuestions = async (params: GetSavedQuestionsParams) => {
     const {
       clerkId,
       page = 1,
-      pageSize = 2,
+      pageSize = 10,
       searchQuery = "",
       filter,
     } = params;
@@ -275,12 +277,45 @@ export const getUserInfo = async (params: GetUserByIdParams) => {
         $group: { _id: null, totalUpvotes: { $sum: "$upvotes" } },
       },
     ]);
+    const [answerUpvotes] = await Answer.aggregate([
+      {
+        $match: { author: user.id },
+      },
+      {
+        $project: { _id: 0, upvotes: { $size: "$upvotes" } },
+      },
+      {
+        $group: { _id: null, totalUpvotes: { $sum: "$upvotes" } },
+      },
+    ]);
+    const [questionViews] = await Question.aggregate([
+      {
+        $match: { author: user.id },
+      },
+      {
+        $group: { _id: null, totalViews: { $sum: "$views" } },
+      },
+    ]);
 
-    console.log({ questionUpvotes });
+    const criteria: CriteriaType = [
+      { type: "ANSWER_COUNT", count: totalAnswers },
+      { type: "QUESTION_COUNT", count: totalQuestions },
+      { type: "QUESTION_UPVOTES", count: questionUpvotes?.totalUpvotes || 0 },
+      { type: "ANSWER_UPVOTES", count: answerUpvotes?.totalUpvotes || 0 },
+      { type: "TOTAL_VIEWS", count: questionViews?.totalViews || 0 },
+    ];
+
+    const badgeCounts = assignBadges(criteria);
 
     if (!user) throw new Error("User not found");
 
-    return { user, totalQuestions, totalAnswers };
+    return {
+      user,
+      totalQuestions,
+      totalAnswers,
+      badgeCounts,
+      reputation: user.reputation,
+    };
   } catch (error) {
     console.log(error);
     throw error;

@@ -11,6 +11,7 @@ import { numberFormatter } from "@/lib/utils";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 interface Props {
   type: "question" | "answer";
@@ -49,6 +50,10 @@ const Votes = ({
   }, [pathname, router, itemId, userId, type]);
 
   const handleVote = async (action: "upvote" | "downvote") => {
+    const upvoteToastMessage = hasUpvoted ? "Upvote removed" : "Upvote added";
+    const downvoteToastMessage = hasDownvoted
+      ? "Downvote removed"
+      : "Downvote added";
     switch (type) {
       case "question": {
         switch (action) {
@@ -60,6 +65,7 @@ const Votes = ({
               path: pathname,
               userId,
             });
+            toast.success(upvoteToastMessage);
             break;
           }
           case "downvote": {
@@ -70,6 +76,7 @@ const Votes = ({
               path: pathname,
               userId,
             });
+            toast.success(downvoteToastMessage);
             break;
           }
         }
@@ -85,6 +92,7 @@ const Votes = ({
               path: pathname,
               userId,
             });
+            toast.success(upvoteToastMessage);
             break;
           }
           case "downvote": {
@@ -95,6 +103,7 @@ const Votes = ({
               path: pathname,
               userId,
             });
+            toast.success(downvoteToastMessage);
             break;
           }
         }
@@ -116,7 +125,7 @@ const Votes = ({
             width={18}
             height={18}
             alt="upvote"
-            className="cursor-pointer"
+            className="cursor-pointer rounded-sm transition-all hover:bg-black/10 active:scale-75 dark:hover:bg-white/20"
             onClick={() => handleVote("upvote")}
           />
 
@@ -136,7 +145,7 @@ const Votes = ({
             width={18}
             height={18}
             alt="downvote"
-            className="cursor-pointer"
+            className="cursor-pointer rounded-sm transition-all hover:bg-black/10 active:scale-75 dark:hover:bg-white/20"
             onClick={() => handleVote("downvote")}
           />
 
@@ -154,10 +163,10 @@ const Votes = ({
               ? "/assets/icons/star-filled.svg"
               : "/assets/icons/star-red.svg"
           }
-          width={18}
-          height={18}
+          width={20}
+          height={20}
           alt="star"
-          className="cursor-pointer"
+          className="cursor-pointer rounded-md px-0.5 transition-all hover:bg-black/10 active:scale-75 dark:hover:bg-white/20"
           onClick={() => handleSave()}
         />
       )}

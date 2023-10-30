@@ -30,6 +30,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
           otherClasses="min-h-[56px] sm:min-w-[170px]"
         />
       </div>
+
       <section className="mt-12 flex flex-wrap gap-4">
         {result.users.length > 0 ? (
           result.users.map((user) => <UserCard key={user.name} user={user} />)

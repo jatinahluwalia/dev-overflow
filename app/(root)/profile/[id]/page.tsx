@@ -13,6 +13,7 @@ import Link from "next/link";
 const Page = async ({ params: { id }, searchParams }: URLProps) => {
   const { userId } = auth();
   const result = await getUserInfo({ userId: id });
+
   return (
     <>
       <div className="flex flex-col-reverse items-start justify-between sm:flex-row">
@@ -68,7 +69,7 @@ const Page = async ({ params: { id }, searchParams }: URLProps) => {
           <SignedIn>
             {userId === result.user.clerkId && (
               <Link href={`/profile/edit`}>
-                <Button className="paragraph-medium btn-secondary text-dark300_light900 min-h-[46px] min-w-[175px] px-4 py-3">
+                <Button className="paragraph-medium btn-secondary text-dark300_light900 min-h-[46px] min-w-[175px] px-4 py-3 transition-all active:scale-90">
                   Edit Profile
                 </Button>
               </Link>
@@ -79,6 +80,8 @@ const Page = async ({ params: { id }, searchParams }: URLProps) => {
       <Stats
         totalQuestions={result.totalQuestions}
         totalAnswers={result.totalAnswers}
+        badges={result.badgeCounts}
+        reputation={result.reputation}
       />
       <div className="mt-10 flex gap-10">
         <Tabs defaultValue="top-posts" className="flex-1">

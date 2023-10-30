@@ -24,6 +24,7 @@ import { useTheme } from "@/context/ThemeProvider";
 import { IQuestion } from "@/database/question.model";
 import { ITag } from "@/database/tag.model";
 import { IUser } from "@/database/user.model";
+import { toast } from "sonner";
 
 type QuestionDetails = Omit<IQuestion, "tags" | "author"> & {
   tags: ITag[];
@@ -104,6 +105,7 @@ const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
           path: pathname,
         });
         router.push(`/question/${parsedQuestionDetails._id}`);
+        toast.success("Question edited");
       } else {
         await createQuestion({
           title: values.title,
@@ -113,6 +115,7 @@ const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
           author: mongoUserId,
         });
         router.push("/");
+        toast.success("Question created");
       }
     } catch (error) {
       console.error(error);

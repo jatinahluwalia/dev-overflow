@@ -11,12 +11,13 @@ import {
 import { AnswerSchema, answerSchema } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Editor } from "@tinymce/tinymce-react";
-import { useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTheme } from "@/context/ThemeProvider";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { createAnswer } from "@/lib/actions/answer.action";
 import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 interface Props {
   question: string;
@@ -28,6 +29,7 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
   const pathname = usePathname();
   const { mode } = useTheme();
   const editorRef = useRef(null);
+  const [isSubmittingAI, setIsSubmittingAI] = useState(false);
   const form = useForm<AnswerSchema>({
     resolver: zodResolver(answerSchema),
     defaultValues: {
@@ -35,20 +37,67 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
     },
     mode: "onChange",
   });
-  const handleCreateAnswer = async (values: AnswerSchema) => {
+
+  const handleCreateAnswer = (values: AnswerSchema) => {
+    return new Promise<void>((resolve) => {
+      toast.promise(
+        createAnswer({
+          content: values.answer,
+          author: authorId,
+          question: questionId,
+          path: pathname,
+        }),
+        {
+          loading: "Submitting answer...",
+          success: () => {
+            form.reset();
+            return "Answer submitted successfully.";
+          },
+          error: (error) => error.message || "Some error occurred.",
+          finally: () => {
+            resolve();
+          },
+        },
+      );
+    });
+  };
+
+  const generateAIAnswer = useCallback(async () => {
+    if (!authorId) return setIsSubmittingAI(false);
+
+    setIsSubmittingAI(true);
+
     try {
-      await createAnswer({
-        content: values.answer,
-        author: authorId,
-        question: questionId,
-        path: pathname,
-      });
-      form.clearErrors();
-      form.reset();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/chatgpt`,
+        { method: "POST", body: JSON.stringify({ question }) },
+      );
+
+      if (res.ok) {
+        const data = await res.json();
+
+        const replyString: string = data.reply;
+
+        const language = replyString
+          .match(/```[A-Za-z]+/gi)?.[0]
+          .replace("```", "");
+
+        const reply = replyString
+          .replace(/\n/g, "<br />")
+          .replace(/```[A-Za-z]+/g, `<pre class="language-${language}">`)
+          .replace(/```/g, "</pre>");
+
+        form.setValue("answer", reply);
+      } else {
+        throw res;
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsSubmittingAI(false);
     }
-  };
+  }, [authorId, form, question]);
+
   return (
     <div>
       <div className="mt-5 flex flex-col justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
@@ -57,16 +106,22 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
         </h4>
         <Button
           className="btn light-border-2 gap-1.5 rounded-md px-4 py-2.5 text-primary-500 shadow-none"
-          onClick={() => {}}
+          onClick={generateAIAnswer}
         >
-          <Image
-            src={"/assets/icons/stars.svg"}
-            alt="star"
-            width={12}
-            height={12}
-            className="object-contain"
-          />
-          Generater an AI Answer
+          {isSubmittingAI ? (
+            <>Generating...</>
+          ) : (
+            <>
+              <Image
+                src={"/assets/icons/stars.svg"}
+                alt="star"
+                width={12}
+                height={12}
+                className="object-contain"
+              />
+              Generate AI Answer
+            </>
+          )}
         </Button>
       </div>
       <Form {...form}>
@@ -125,7 +180,7 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
             <Button
               type="submit"
               className="primary-gradient w-fit text-white"
-              disabled={form.formState.isSubmitting}
+              disabled={form.formState.isSubmitting || isSubmittingAI}
             >
               {form.formState.isSubmitting ? "Submitting..." : "Submit"}
             </Button>

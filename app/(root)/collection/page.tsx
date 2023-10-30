@@ -23,6 +23,7 @@ const Home = async ({ searchParams }: SearchParamsProps) => {
     filter: searchParams.filter,
     page,
   });
+
   return (
     <>
       <h1 className="text-dark100_light900 h1-bold">Saved Questions</h1>

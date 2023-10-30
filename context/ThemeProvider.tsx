@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect, useContext, createContext } from "react";
 
+type Mode = "light" | "dark" | "system" | undefined;
 interface Context {
-  mode: string;
-  setMode: (mode: string) => void;
+  mode: Mode;
+  setMode: (mode: Mode) => void;
 }
 
 const ThemeContext = createContext<Context>({} as Context);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [mode, setMode] = useState("");
+  const [mode, setMode] = useState<Mode>(undefined);
   useEffect(() => {
     if (mode === "dark") {
       document.documentElement.classList.add("dark");

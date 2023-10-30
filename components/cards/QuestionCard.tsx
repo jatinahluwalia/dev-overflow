@@ -38,7 +38,7 @@ const QuestionCard = ({
             {dateFormatter(createdAt)}
           </span>
           <Link href={`/question/${_id}`}>
-            <h3 className="sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 flex-1">
+            <h3 className="sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 flex-1 hover:underline">
               {title}
             </h3>
           </Link>
