@@ -14,7 +14,7 @@ import { themes } from "@/constants";
 import { Button } from "@/components/ui/button";
 
 const Theme = () => {
-  const [localTheme, setLocalTheme] = useState("");
+  const [localTheme, setLocalTheme] = useState<string | undefined>("");
   useEffect(() => {
     setLocalTheme(localStorage.theme);
   }, []);
@@ -60,7 +60,7 @@ const Theme = () => {
             >
               <Image
                 src={theme.icon}
-                alt={theme.value}
+                alt={`${theme.value}`}
                 height={19}
                 width={19}
                 className={`${
