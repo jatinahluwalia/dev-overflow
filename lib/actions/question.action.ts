@@ -77,8 +77,9 @@ export const getQuestions = async (params: GetQuestionsParams) => {
 
 export const createQuestion = async (params: CreateQuestionParams) => {
   try {
-    await connectDB();
     const { title, content, tags, author, path } = params;
+    if ((await getMongoId()) !== author) throw new Error("Action not allowed");
+    await connectDB();
     const question = await Question.create({
       title,
       content,
@@ -141,9 +142,9 @@ export const getQuestionById = async (params: GetQuestionByIdParams) => {
 
 export const upvoteQuestion = async (params: QuestionVoteParams) => {
   try {
-    await connectDB();
-
     const { hasdownVoted, hasupVoted, path, questionId, userId } = params;
+    if ((await getMongoId()) !== userId) throw new Error("Action not allowed");
+    await connectDB();
 
     let updateQuery = {};
     if (hasupVoted) {
@@ -181,10 +182,9 @@ export const upvoteQuestion = async (params: QuestionVoteParams) => {
 };
 export const downvoteQuestion = async (params: QuestionVoteParams) => {
   try {
-    await connectDB();
-
     const { hasdownVoted, hasupVoted, path, questionId, userId } = params;
-
+    if ((await getMongoId()) !== userId) throw new Error("Action not allowed");
+    await connectDB();
     let updateQuery = {};
     if (hasdownVoted) {
       updateQuery = { $pull: { downvotes: userId } };
@@ -315,7 +315,10 @@ export const deleteQuestion = async (params: DeleteQuestionParams) => {
     await connectDB();
     const { path, questionId } = params;
 
-    await Question.findByIdAndDelete(questionId);
+    await Question.findOneAndDelete({
+      id: questionId,
+      author: await getMongoId(),
+    });
     await Answer.deleteMany({ question: questionId });
     await Interaction.deleteMany({ question: questionId });
     await Tag.updateMany(
@@ -336,7 +339,7 @@ export const editQuestion = async (params: EditQuestionParams) => {
     const { path, questionId, content, title } = params;
 
     const updatedQuestion = await Question.findOneAndUpdate(
-      { _id: questionId, author: getMongoId() },
+      { _id: questionId, author: await getMongoId() },
       { title, content },
     );
 

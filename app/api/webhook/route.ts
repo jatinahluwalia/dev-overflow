@@ -76,7 +76,7 @@ export const POST = async (req: NextRequest) => {
       const mongoUser = await updateUser({
         clerkId: id,
         updateData: {
-          name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
+          name: `${first_name} ${last_name}`,
           username: username || `${first_name}_${last_name}`,
           email: email_addresses[0].email_address,
           picture: image_url,
