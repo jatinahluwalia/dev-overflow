@@ -31,7 +31,9 @@ const Metric = ({
           className={`object-contain ${isAuthor ? "rounded-full" : ""}`}
         />
         <p className={`${textStyles} flex items-center gap-1 leading-none`}>
-          {value}
+          <span className={`${isAuthor ? "hover:underline" : ""}`}>
+            {value}
+          </span>
           <span
             className={`small-regular line-clamp-1 leading-none ${
               isAuthor ? "max-sm:hidden" : ""

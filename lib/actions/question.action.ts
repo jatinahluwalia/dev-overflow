@@ -111,6 +111,8 @@ export const createQuestion = async (params: CreateQuestionParams) => {
     await User.findByIdAndUpdate(author, { $inc: { reputation: 5 } });
 
     revalidatePath(path);
+
+    return question.id;
   } catch (error) {
     console.log(error);
     throw error;

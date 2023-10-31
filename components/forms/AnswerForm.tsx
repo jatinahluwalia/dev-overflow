@@ -62,40 +62,45 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
     });
   };
 
-  const generateAIAnswer = useCallback(async () => {
+  const generateAIAnswer = useCallback(() => {
     if (!authorId) return setIsSubmittingAI(false);
 
     setIsSubmittingAI(true);
 
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/chatgpt`,
-        { method: "POST", body: JSON.stringify({ question }) },
-      );
+    toast.promise(
+      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/chatgpt`, {
+        method: "POST",
+        body: JSON.stringify({ question }),
+      }),
+      {
+        loading: "Generating AI answer...",
+        success: async (res) => {
+          if (res.ok) {
+            const data = await res.json();
+            const replyString: string = data.reply;
 
-      if (res.ok) {
-        const data = await res.json();
+            const language = replyString
+              .match(/```[A-Za-z]+/gi)?.[0]
+              .replace("```", "");
 
-        const replyString: string = data.reply;
+            const reply = replyString
+              .replace(/\n/g, "<br />")
+              .replace(/```[A-Za-z]+/g, `<pre class="language-${language}">`)
+              .replace(/```/g, "</pre>");
 
-        const language = replyString
-          .match(/```[A-Za-z]+/gi)?.[0]
-          .replace("```", "");
-
-        const reply = replyString
-          .replace(/\n/g, "<br />")
-          .replace(/```[A-Za-z]+/g, `<pre class="language-${language}">`)
-          .replace(/```/g, "</pre>");
-
-        form.setValue("answer", reply);
-      } else {
-        throw res;
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsSubmittingAI(false);
-    }
+            form.setValue("answer", reply);
+            return "Answer generated.";
+          } else {
+            throw res;
+          }
+        },
+        error: (error) => error.message || "Some error occurred.",
+        finally: () => {
+          setIsSubmittingAI(false);
+        },
+        important: false,
+      },
+    );
   }, [authorId, form, question]);
 
   return (

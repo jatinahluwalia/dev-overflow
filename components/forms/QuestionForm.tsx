@@ -95,31 +95,51 @@ const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
     form.setValue("tags", newTags);
   };
 
-  const onSubmit = async (values: QuestionsSchema) => {
-    try {
+  const onSubmit = (values: QuestionsSchema) => {
+    return new Promise<void>((resolve) => {
       if (type === "edit") {
-        await editQuestion({
-          questionId: parsedQuestionDetails._id,
-          title: values.title,
-          content: values.explaination,
-          path: pathname,
-        });
-        router.push(`/question/${parsedQuestionDetails._id}`);
-        toast.success("Question edited");
+        toast.promise(
+          editQuestion({
+            questionId: parsedQuestionDetails._id,
+            title: values.title,
+            content: values.explaination,
+            path: pathname,
+          }),
+          {
+            loading: "Editing question...",
+            success: () => {
+              router.push(`/question/${parsedQuestionDetails._id}`);
+              return "Question edited successfully.";
+            },
+            error: (error) => error.message || "Some error occurred.",
+            finally: () => {
+              resolve();
+            },
+          },
+        );
       } else {
-        await createQuestion({
-          title: values.title,
-          content: values.explaination,
-          path: pathname,
-          tags: values.tags,
-          author: mongoUserId,
-        });
-        router.push("/");
-        toast.success("Question created");
+        toast.promise(
+          createQuestion({
+            title: values.title,
+            content: values.explaination,
+            path: pathname,
+            tags: values.tags,
+            author: mongoUserId,
+          }),
+          {
+            loading: "Asking question...",
+            success: (id) => {
+              router.push(`/question/${id}`);
+              return "Question added successfully.";
+            },
+            error: (error) => error.message || "Some error occurred.",
+            finally: () => {
+              resolve();
+            },
+          },
+        );
       }
-    } catch (error) {
-      console.error(error);
-    }
+    });
   };
   return (
     <Form {...form}>
