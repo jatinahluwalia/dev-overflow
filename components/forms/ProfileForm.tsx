@@ -71,14 +71,17 @@ const ProfileForm = ({ clerkId, user }: Props) => {
           control={form.control}
           render={({ field }) => (
             <FormItem className="space-y-3.5">
-              <FormLabel htmlFor="name">
+              <FormLabel
+                htmlFor="name"
+                className="paragraph-semibold text-dark400_light800"
+              >
                 Name <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl>
                 <Input
                   id="name"
                   placeholder="Your name..."
-                  className="no-focus paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 min-h-[56px] border"
+                  className="no-focus paragraph-regular light-border-2 background-light800_dark300 text-dark300_light700 min-h-[56px] border"
                   {...field}
                 />
               </FormControl>
@@ -91,14 +94,17 @@ const ProfileForm = ({ clerkId, user }: Props) => {
           control={form.control}
           render={({ field }) => (
             <FormItem className="space-y-3.5">
-              <FormLabel htmlFor="username">
+              <FormLabel
+                htmlFor="username"
+                className="paragraph-semibold text-dark400_light800"
+              >
                 Username <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl {...field}>
                 <Input
                   id="username"
                   placeholder="Your username..."
-                  className="no-focus paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 min-h-[56px] border"
+                  className="no-focus paragraph-regular light-border-2 background-light800_dark300 text-dark300_light700 min-h-[56px] border"
                 />
               </FormControl>
               <FormMessage />
@@ -110,13 +116,18 @@ const ProfileForm = ({ clerkId, user }: Props) => {
           control={form.control}
           render={({ field }) => (
             <FormItem className="space-y-3.5">
-              <FormLabel htmlFor="portfolio">Portfolio Link</FormLabel>
+              <FormLabel
+                htmlFor="portfolio"
+                className="paragraph-semibold text-dark400_light800"
+              >
+                Portfolio Link
+              </FormLabel>
               <FormControl {...field}>
                 <Input
                   type="url"
                   id="portfolio"
                   placeholder="Your portfolio link..."
-                  className="no-focus paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 min-h-[56px] border"
+                  className="no-focus paragraph-regular light-border-2 background-light800_dark300 text-dark300_light700 min-h-[56px] border"
                 />
               </FormControl>
               <FormMessage />
@@ -128,12 +139,17 @@ const ProfileForm = ({ clerkId, user }: Props) => {
           control={form.control}
           render={({ field }) => (
             <FormItem className="space-y-3.5">
-              <FormLabel htmlFor="location">Location</FormLabel>
+              <FormLabel
+                htmlFor="location"
+                className="paragraph-semibold text-dark400_light800"
+              >
+                Location
+              </FormLabel>
               <FormControl {...field}>
                 <Input
                   id="location"
                   placeholder="Where are you from?"
-                  className="no-focus paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 min-h-[56px] border"
+                  className="no-focus paragraph-regular light-border-2 background-light800_dark300 text-dark300_light700 min-h-[56px] border"
                 />
               </FormControl>
               <FormMessage />
@@ -145,12 +161,17 @@ const ProfileForm = ({ clerkId, user }: Props) => {
           control={form.control}
           render={({ field }) => (
             <FormItem className="space-y-3.5">
-              <FormLabel htmlFor="bio">Bio</FormLabel>
+              <FormLabel
+                htmlFor="bio"
+                className="paragraph-semibold text-dark400_light800"
+              >
+                Bio
+              </FormLabel>
               <FormControl {...field}>
                 <Textarea
                   id="bio"
                   placeholder="What's special about you?"
-                  className="no-focus paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 min-h-[56px] border"
+                  className="no-focus paragraph-regular light-border-2 background-light800_dark300 text-dark300_light700 min-h-[56px] border"
                 />
               </FormControl>
               <FormMessage />

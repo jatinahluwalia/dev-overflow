@@ -27,7 +27,7 @@
     "dayjs": "^1.11.10",
     "html-react-parser": "^5.0.3",
     "lucide-react": "^0.291.0",
-    "mongoose": "^7.6.4",
+    "mongoose": "^8.0.0",
     "next": "latest",
     "nextjs-toploader": "^1.5.3",
     "prismjs": "^1.29.0",
@@ -41,7 +41,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "20.8.9",
+    "@types/node": "20.8.10",
     "@types/prismjs": "^1.26.2",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",

@@ -46,3 +46,5 @@ export interface BadgeCounts {
 }
 
 export type BadgeCriteriaType = keyof typeof BADGE_CRITERIA;
+
+export type Mode = "light" | "dark" | "system" | undefined;

@@ -12,6 +12,7 @@ import {
   GetQuestionsByTagIdParams,
   GetQuestionsParams,
   QuestionVoteParams,
+  RecommendedParams,
 } from "./shared.types";
 import User, { IUser } from "@/database/user.model";
 import Answer from "@/database/answer.model";
@@ -366,6 +367,54 @@ export const getHotQuestions = async () => {
       .limit(5);
 
     return questions;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getRecommendedQuestions = async (params: RecommendedParams) => {
+  try {
+    const { userId, page = 1, pageSize = 10, searchQuery = "" } = params;
+
+    const user = await User.findOne({ clerkId: userId });
+
+    if (!user) throw new Error("User not found.");
+
+    const userInteractionsTags = await Interaction.find({
+      user: user.id,
+    }).distinct("tags");
+
+    const query: FilterQuery<IQuestion> = {
+      tags: { $in: userInteractionsTags },
+      author: { $ne: user.id },
+      $or: [
+        { title: { $regex: new RegExp(searchQuery, "i") } },
+        { content: { $regex: new RegExp(searchQuery, "i") } },
+      ],
+    };
+
+    const questions = await Question.find(query)
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .populate<{ author: IUser; tags: ITag[] }>([
+        {
+          path: "author",
+          model: User,
+          select: "_id name picture username",
+        },
+        {
+          path: "tags",
+          model: Tag,
+          select: "_id name",
+        },
+      ]);
+
+    const totalQuestions = await Question.countDocuments(query);
+
+    const isNext = totalQuestions > pageSize * page;
+
+    return { questions, isNext };
   } catch (error) {
     console.log(error);
     throw error;

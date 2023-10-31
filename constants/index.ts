@@ -1,7 +1,7 @@
-import { SidebarLink } from "@/types";
+import { Mode, SidebarLink } from "@/types";
 
 export const themes: {
-  value: "light" | "dark" | "system" | undefined;
+  value: Mode;
   label: string;
   icon: string;
 }[] = [

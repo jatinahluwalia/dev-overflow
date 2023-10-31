@@ -1,8 +1,8 @@
 "use client";
 
+import { Mode } from "@/types";
 import React, { useState, useEffect, useContext, createContext } from "react";
 
-type Mode = "light" | "dark" | "system" | undefined;
 interface Context {
   mode: Mode;
   setMode: (mode: Mode) => void;

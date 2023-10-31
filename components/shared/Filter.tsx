@@ -61,7 +61,7 @@ const Filter = ({ filters, containerClasses, otherClasses }: Props) => {
             <SelectItem
               placeholder="Filter"
               value="clear"
-              className="text-dark200_light900 cursor-pointer hover:bg-light-800 dark:hover:bg-dark-400"
+              className="text-dark200_light900 cursor-pointer focus:bg-light-800 dark:focus:bg-dark-400"
             >
               Reset
             </SelectItem>
