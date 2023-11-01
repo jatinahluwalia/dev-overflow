@@ -44,7 +44,7 @@ const LocalSearchbar = ({
         });
         router.push(`${pathname}?${queryString}`);
       }
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(debouncer);
   }, [query, search, router, pathname, searchParams]);
@@ -69,7 +69,7 @@ const LocalSearchbar = ({
           setSearch(e.target.value);
         }}
         placeholder={placeholder}
-        className="no-focus paragraph-regular placeholder:text-light400_light500 h-max grow border-none bg-transparent p-0 shadow-none outline-none"
+        className="text-dark100_light900 no-focus paragraph-regular placeholder:text-light400_light500 h-max grow border-none bg-transparent p-0 shadow-none outline-none"
       />
 
       {iconPosition === "right" && (

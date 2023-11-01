@@ -54,7 +54,7 @@ const GlobalSearch = () => {
         });
         router.push(`${pathname}?${queryString}`);
       }
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(debouncer);
   }, [query, search, router, pathname, searchParams]);
