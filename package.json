@@ -30,7 +30,7 @@
     "html-react-parser": "^5.0.3",
     "lucide-react": "^0.291.0",
     "mongoose": "^8.0.0",
-    "next": "latest",
+    "next": "^14.0.1",
     "nextjs-toploader": "^1.5.3",
     "prismjs": "^1.29.0",
     "query-string": "^8.1.0",
