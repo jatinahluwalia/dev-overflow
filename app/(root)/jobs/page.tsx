@@ -1,5 +1,6 @@
 import JobCard from "@/components/cards/JobCard";
 import CountriesFilter from "@/components/shared/CountriesFilter";
+import NoResult from "@/components/shared/NoResult";
 import Pagination from "@/components/shared/Pagination";
 import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { SearchParamsProps } from "@/types";
@@ -18,7 +19,6 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
         "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
         "X-RapidAPI-Key": process.env.RAPID_API_KEY || "",
       },
-      cache: "no-store",
     },
   );
 
@@ -47,7 +47,16 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
       </div>
 
       <div className="mt-10 flex flex-col gap-8">
-        {jobs?.map((job) => <JobCard key={job.job_id} job={job} />)}
+        {jobs?.length > 0 ? (
+          jobs?.map((job) => <JobCard key={job.job_id} job={job} />)
+        ) : (
+          <NoResult
+            description="No jobs match your query"
+            link="https://www.linkedin.com/"
+            linkTitle="Check LinkedIn"
+            title="No results"
+          />
+        )}
       </div>
       <div className="mt-10">
         <Pagination

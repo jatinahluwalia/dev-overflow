@@ -77,6 +77,7 @@ const JobCard = ({ job }: Props) => {
             height={20}
             alt="arrow"
             src={"/assets/icons/arrow-up-right.svg"}
+            className="object-contain object-center"
           />
         </Link>
       </div>
