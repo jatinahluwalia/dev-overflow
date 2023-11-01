@@ -27,7 +27,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
   const jobs = data.data;
 
   const countriesResponse = await fetch(
-    "https://restcountries.com/v3.1/all?fields=name",
+    "https://restcountries.com/v3.1/all?fields=name,cca2,flags",
   );
   const countriesData: CountryType[] = await countriesResponse.json();
 
@@ -48,7 +48,9 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
 
       <div className="mt-10 flex flex-col gap-8">
         {jobs?.length > 0 ? (
-          jobs?.map((job) => <JobCard key={job.job_id} job={job} />)
+          jobs?.map((job) => (
+            <JobCard key={job.job_id} job={job} countriesData={countriesData} />
+          ))
         ) : (
           <NoResult
             description="No jobs match your query"

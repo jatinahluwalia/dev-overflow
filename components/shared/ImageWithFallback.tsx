@@ -8,7 +8,7 @@ interface Props extends ImageProps {
 }
 
 const ImageWithFallback = ({
-  fallbackUrl = "/assets/icons/suitcase.svg",
+  fallbackUrl = "/assets/icons/fallback.svg",
   width,
   height,
   src,
