@@ -19,6 +19,7 @@ import Tag, { ITag } from "@/database/tag.model";
 import Answer from "@/database/answer.model";
 import { FilterQuery } from "mongoose";
 import { assignBadges } from "../utils";
+import Interaction from "@/database/interaction.model";
 
 export const getUserById = async ({ userId }: { userId: string }) => {
   try {
@@ -59,16 +60,13 @@ export const deleteUser = async (params: DeleteUserParams) => {
   try {
     await connectDB();
     const { clerkId } = params;
-    const user = await User.findOne({ clerkId });
-    if (!user) throw new Error("User not found");
+    const deletedUser = await User.findOneAndDelete({ clerkId });
+    if (!deletedUser) throw new Error("User not found");
 
-    // const questionIds = await Question.find({ author: user._id }).distinct(
-    //   "_id",
-    // );
+    await Question.deleteMany({ author: deletedUser.id });
+    await Answer.deleteMany({ author: deletedUser.id });
+    await Interaction.deleteMany({ user: deletedUser.id });
 
-    await Question.deleteMany({ author: user._id });
-
-    const deletedUser = await User.findByIdAndDelete(user._id);
     return deletedUser;
   } catch (error) {
     console.log(error);
