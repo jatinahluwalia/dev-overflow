@@ -61,6 +61,7 @@ const Theme = () => {
               <Image
                 src={theme.icon}
                 alt={`${theme.value}`}
+                priority
                 height={19}
                 width={19}
                 className={`${
