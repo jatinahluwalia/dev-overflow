@@ -5,6 +5,7 @@ import { connectDB } from "../mongoose";
 import { GetAllTagsParams, GetTopInteractedTagsParams } from "./shared.types";
 import Tag, { ITag } from "@/database/tag.model";
 import { FilterQuery, Types } from "mongoose";
+import Interaction from "@/database/interaction.model";
 
 export const getTopInteractedTags = async (
   params: GetTopInteractedTagsParams,
@@ -17,13 +18,14 @@ export const getTopInteractedTags = async (
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
 
-    // TODO: Intereactions
+    // TODO: Interactions
 
-    return [
-      { name: "tag1", id: "1" },
-      { name: "tag2", id: "2" },
-      { name: "tag3", id: "3" },
-    ];
+    const tags = await Interaction.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .distinct("tags");
+
+    const tagsArray = await Tag.find({ id: { $in: tags } }).limit(3);
+    return tagsArray;
   } catch (error) {
     console.log(error);
     throw error;
