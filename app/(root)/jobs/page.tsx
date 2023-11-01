@@ -18,6 +18,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
         "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
         "X-RapidAPI-Key": process.env.RAPID_API_KEY || "",
       },
+      cache: "no-store",
     },
   );
 
@@ -46,9 +47,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
       </div>
 
       <div className="mt-10 flex flex-col gap-8">
-        {jobs.map((job) => (
-          <JobCard key={job.job_id} job={job} />
-        ))}
+        {jobs?.map((job) => <JobCard key={job.job_id} job={job} />)}
       </div>
       <div className="mt-10">
         <Pagination
