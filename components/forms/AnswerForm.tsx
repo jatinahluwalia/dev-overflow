@@ -77,16 +77,16 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
         success: async (res) => {
           if (res.ok) {
             const data = await res.json();
-            const replyString: string = data.reply;
+            const replyString: string = data?.reply;
 
             const language = replyString
-              .match(/```[A-Za-z]+/gi)?.[0]
-              .replace("```", "");
+              ?.match(/```[A-Za-z]+/gi)?.[0]
+              ?.replace("```", "");
 
             const reply = replyString
-              .replace(/\n/g, "<br />")
-              .replace(/```[A-Za-z]+/g, `<pre class="language-${language}">`)
-              .replace(/```/g, "</pre>");
+              ?.replace(/\n/g, "<br />")
+              ?.replace(/```[A-Za-z]+/g, `<pre class="language-${language}">`)
+              ?.replace(/```/g, "</pre>");
 
             form.setValue("answer", reply);
             return "Answer generated.";
