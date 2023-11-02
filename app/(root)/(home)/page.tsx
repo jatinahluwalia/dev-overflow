@@ -21,8 +21,7 @@ import { auth } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "Home | Dev Overflow",
-  icons: {     
-  }
+  icons: {},
 };
 
 const Home = async ({ searchParams }: SearchParamsProps) => {

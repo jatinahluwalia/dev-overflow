@@ -11,7 +11,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Community | Dev Overflow",
-}
+};
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
   const result = await getAllUsers({
