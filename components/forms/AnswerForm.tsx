@@ -38,8 +38,8 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
     mode: "onChange",
   });
 
-  const handleCreateAnswer = (values: AnswerSchema) => {
-    return new Promise<void>((resolve) => {
+  const handleCreateAnswer = async (values: AnswerSchema) => {
+    await new Promise<void>((resolve) => {
       toast.promise(
         createAnswer({
           content: values.answer,
@@ -68,7 +68,7 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
     setIsSubmittingAI(true);
 
     toast.promise(
-      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/chatgpt`, {
+      fetch(`/api/chatgpt`, {
         method: "POST",
         body: JSON.stringify({ question }),
       }),
