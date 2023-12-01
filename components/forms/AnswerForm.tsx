@@ -39,27 +39,31 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
   });
 
   const handleCreateAnswer = async (values: AnswerSchema) => {
-    await new Promise<void>((resolve) => {
-      toast.promise(
-        createAnswer({
-          content: values.answer,
-          author: authorId,
-          question: questionId,
-          path: pathname,
-        }),
-        {
-          loading: "Submitting answer...",
-          success: () => {
-            form.reset();
-            return "Answer submitted successfully.";
+    try {
+      await new Promise<void>((resolve) => {
+        toast.promise(
+          createAnswer({
+            content: values.answer,
+            author: authorId,
+            question: questionId,
+            path: pathname,
+          }),
+          {
+            loading: "Submitting answer...",
+            success: () => {
+              form.reset();
+              return "Answer submitted successfully.";
+            },
+            error: (error) => error.message || "Some error occurred.",
+            finally: () => {
+              resolve();
+            },
           },
-          error: (error) => error.message || "Some error occurred.",
-          finally: () => {
-            resolve();
-          },
-        },
-      );
-    });
+        );
+      });
+    } catch (error: any) {
+      toast.error(error.message || "Error generating answer...");
+    }
   };
 
   const generateAIAnswer = useCallback(() => {
