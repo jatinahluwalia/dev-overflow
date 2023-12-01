@@ -40,7 +40,7 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
 
   const handleCreateAnswer = async (values: AnswerSchema) => {
     try {
-      await new Promise<void>((resolve) => {
+      await new Promise<void>((resolve, reject) => {
         toast.promise(
           createAnswer({
             content: values.answer,
@@ -52,11 +52,12 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
             loading: "Submitting answer...",
             success: () => {
               form.reset();
+              resolve();
               return "Answer submitted successfully.";
             },
-            error: (error) => error.message || "Some error occurred.",
-            finally: () => {
-              resolve();
+            error: (error) => {
+              reject(new Error(""));
+              return error.message || "Some error occurred.";
             },
           },
         );
