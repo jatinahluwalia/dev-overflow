@@ -44,7 +44,7 @@ const QuestionCard = ({
           </Link>
         </div>
         <SignedIn>
-          {clerkId === author.clerkId && (
+          {clerkId === author?.clerkId && (
             <EditDeleteActions type="question" itemId={_id} />
           )}
         </SignedIn>
