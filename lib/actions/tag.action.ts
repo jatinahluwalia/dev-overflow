@@ -11,21 +11,39 @@ export const getTopInteractedTags = async (
   params: GetTopInteractedTagsParams,
 ) => {
   try {
+    // await connectDB();
+
+    // const { userId } = params;
+
+    // const user = await User.findById(userId);
+    // if (!user) throw new Error("User not found");
+
+    // // TODO: Interactions
+
+    // const tags = await Interaction.find({ user: userId })
+    //   .sort({ createdAt: -1 })
+    //   .distinct("tags");
+
+    // const tagsArray = await Tag.find({ id: { $in: tags } }).limit(3);
+    // return tagsArray;
+
+
     await connectDB();
 
     const { userId } = params;
 
-    const user = await User.findById(userId);
-    if (!user) throw new Error("User not found");
+     
 
-    // TODO: Interactions
+    // Find tags where the followers array contains the userId
+    const tagsWithUser = await Tag.find({ followers: userId });
 
-    const tags = await Interaction.find({ user: userId })
-      .sort({ createdAt: -1 })
-      .distinct("tags");
+    // Extract names from tags where user is a follower
+    const tagNames = tagsWithUser.map((tag) => ({
+      _id: tag._id.toString(),
+      name: tag.name,
+    }));
 
-    const tagsArray = await Tag.find({ id: { $in: tags } }).limit(3);
-    return tagsArray;
+    return tagNames;
   } catch (error) {
     console.log(error);
     throw error;
