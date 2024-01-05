@@ -32,6 +32,8 @@ export const getTopInteractedTags = async (
 
     const { userId } = params;
 
+     
+
     // Find tags where the followers array contains the userId
     const tagsWithUser = await Tag.find({ followers: userId });
 
