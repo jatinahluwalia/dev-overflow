@@ -16,7 +16,7 @@ const JobCard = ({ job, countriesData }: Props) => {
   const flag = countriesData.find((country) => country.cca2 === job.job_country)
     ?.flags;
   return (
-    <article className="background-light900_dark200 light-border flex justify-between gap-4 rounded-lg border p-8 dark:border-dark-300 max-xl:flex-col">
+    <article className="background-light900_dark200 light-border flex justify-between gap-4 rounded-lg border p-8 max-xl:flex-col dark:border-dark-300">
       <div className="grid grid-flow-col justify-start gap-6">
         <div className="background-light800_dark400 relative h-[64px] w-[64px] overflow-hidden rounded-xl">
           <ImageWithFallback
