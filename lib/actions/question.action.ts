@@ -92,10 +92,13 @@ export const createQuestion = async (params: CreateQuestionParams) => {
     for (const tag of tags) {
       const existingTag = await Tag.findOneAndUpdate(
         { name: { $regex: new RegExp(`^${tag}$`, "i") } },
-        { $setOnInsert: { name: tag }, $addToSet: {
-          questions: question._id, 
-          followers: author, //? Add the author to the followers array to grab from tags gettopinteracted function and check this action
-        }, },
+        {
+          $setOnInsert: { name: tag },
+          $addToSet: {
+            questions: question._id,
+            followers: author, // ? Add the author to the followers array to grab from tags gettopinteracted function and check this action
+          },
+        },
         { upsert: true, new: true },
       );
       tagDocs.push(existingTag.id);

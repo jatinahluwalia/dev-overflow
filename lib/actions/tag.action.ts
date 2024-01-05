@@ -1,11 +1,11 @@
 "use server";
 
-import User from "@/database/user.model";
+// import User from "@/database/user.model";
 import { connectDB } from "../mongoose";
 import { GetAllTagsParams, GetTopInteractedTagsParams } from "./shared.types";
 import Tag, { ITag } from "@/database/tag.model";
 import { FilterQuery, Types } from "mongoose";
-import Interaction from "@/database/interaction.model";
+// import Interaction from "@/database/interaction.model";
 
 export const getTopInteractedTags = async (
   params: GetTopInteractedTagsParams,
@@ -27,19 +27,16 @@ export const getTopInteractedTags = async (
     // const tagsArray = await Tag.find({ id: { $in: tags } }).limit(3);
     // return tagsArray;
 
-
     await connectDB();
 
     const { userId } = params;
-
-     
 
     // Find tags where the followers array contains the userId
     const tagsWithUser = await Tag.find({ followers: userId });
 
     // Extract names from tags where user is a follower
     const tagNames = tagsWithUser.map((tag) => ({
-      _id: tag._id.toString(),
+      id: tag.id,
       name: tag.name,
     }));
 

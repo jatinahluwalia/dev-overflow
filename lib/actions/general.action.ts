@@ -45,8 +45,8 @@ export const globalSearch = async (params: SearchParams) => {
               type === "answer"
                 ? item.question
                 : type === "user"
-                ? item.clerkId
-                : item.id,
+                  ? item.clerkId
+                  : item.id,
             type,
           })),
         );
@@ -69,8 +69,8 @@ export const globalSearch = async (params: SearchParams) => {
           type === "answer"
             ? item.question
             : type === "user"
-            ? item.clerkId
-            : item.id,
+              ? item.clerkId
+              : item.id,
         type,
       }));
     }

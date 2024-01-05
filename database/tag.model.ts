@@ -11,7 +11,7 @@ const tagSchema = new Schema(
     name: { type: String, required: true, unique: true },
     description: { type: String, required: true },
     questions: [{ type: String, ref: "Question" }],
-    followers: [{ type: String, ref: "user" }],
+    followers: [{ type: String, ref: "User" }],
   },
   { timestamps: true },
 );

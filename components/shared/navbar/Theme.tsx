@@ -54,8 +54,8 @@ const Theme = () => {
                 theme.value !== "system"
                   ? setMode(theme.value)
                   : window.matchMedia("(prefers-color-scheme: dark)").matches
-                  ? setMode("dark")
-                  : setMode("light");
+                    ? setMode("dark")
+                    : setMode("light");
               }}
             >
               <Image
