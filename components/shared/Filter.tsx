@@ -59,7 +59,7 @@ const Filter = ({ filters, containerClasses, otherClasses }: Props) => {
         <SelectContent className="background-light900_dark300 dark:border-none">
           <SelectGroup>
             <SelectItem
-              placeholder="Filter"
+              // placeholder="Filter"
               value="clear"
               className="text-dark200_light900 cursor-pointer focus:bg-light-800 dark:focus:bg-dark-400"
             >
