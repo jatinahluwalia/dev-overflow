@@ -63,9 +63,9 @@ export const deleteUser = async (params: DeleteUserParams) => {
     const deletedUser = await User.findOneAndDelete({ clerkId });
     if (!deletedUser) throw new Error("User not found");
 
-    await Question.deleteMany({ author: deletedUser._id.toString() });
-    await Answer.deleteMany({ author: deletedUser._id.toString() });
-    await Interaction.deleteMany({ user: deletedUser._id.toString() });
+    await Question.deleteMany({ author: deletedUser.id });
+    await Answer.deleteMany({ author: deletedUser.id });
+    await Interaction.deleteMany({ user: deletedUser.id });
 
     return deletedUser;
   } catch (error) {
