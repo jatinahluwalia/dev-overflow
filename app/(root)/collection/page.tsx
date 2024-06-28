@@ -1,21 +1,21 @@
-import QuestionCard from "@/components/cards/QuestionCard";
-import Filter from "@/components/shared/Filter";
-import NoResult from "@/components/shared/NoResult";
-import Pagination from "@/components/shared/Pagination";
-import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
-import { QuestionFilters } from "@/constants/filters";
-import { getSavedQuestions } from "@/lib/actions/user.action";
-import { SearchParamsProps } from "@/types";
-import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
-import React from "react";
+import QuestionCard from '@/components/cards/QuestionCard';
+import Filter from '@/components/shared/Filter';
+import NoResult from '@/components/shared/NoResult';
+import Pagination from '@/components/shared/Pagination';
+import LocalSearchbar from '@/components/shared/search/LocalSearchbar';
+import { QuestionFilters } from '@/constants/filters';
+import { getSavedQuestions } from '@/lib/actions/user.action';
+import { SearchParamsProps } from '@/types';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import React from 'react';
 
 const Home = async ({ searchParams }: SearchParamsProps) => {
   const { userId } = auth();
 
-  if (!userId) return redirect("/sign-in");
+  if (!userId) return redirect('/sign-in');
 
-  const page = +(searchParams.page || "1");
+  const page = +(searchParams.page || '1');
 
   const result = await getSavedQuestions({
     clerkId: userId,
@@ -60,7 +60,7 @@ const Home = async ({ searchParams }: SearchParamsProps) => {
           <NoResult
             title="There's no saved questions to show"
             description={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati quis  numquam ea dicta voluptatum sunt!`}
-            link={"/ask-question"}
+            link={'/ask-question'}
             linkTitle="Ask a Question"
           />
         )}

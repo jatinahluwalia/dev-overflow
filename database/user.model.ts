@@ -1,11 +1,11 @@
 import {
-  Document,
+  HydratedDocument,
   InferSchemaType,
   Model,
   Schema,
   model,
   models,
-} from "mongoose";
+} from 'mongoose';
 
 const userSchema = new Schema(
   {
@@ -36,13 +36,13 @@ const userSchema = new Schema(
     location: { type: String },
     portfolioWebsite: { type: String },
     reputation: { type: Number, default: 0 },
-    saved: [{ type: String, ref: "Question" }],
+    saved: [{ type: String, ref: 'Question' }],
   },
   { timestamps: true },
 );
 
-export type IUser = Document & InferSchemaType<typeof userSchema>;
+export type IUser = HydratedDocument<InferSchemaType<typeof userSchema>>;
 
-const User: Model<IUser> = models.User || model("User", userSchema);
+const User: Model<IUser> = models.User || model('User', userSchema);
 
 export default User;

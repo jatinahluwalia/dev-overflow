@@ -1,12 +1,12 @@
-import ProfileForm from "@/components/forms/ProfileForm";
-import { getUserById } from "@/lib/actions/user.action";
-import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import ProfileForm from '@/components/forms/ProfileForm';
+import { getUserById } from '@/lib/actions/user.action';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 
 const Page = async () => {
   const { userId } = auth();
 
-  if (!userId) return redirect("/sign-in");
+  if (!userId) return redirect('/sign-in');
   const mongoUser = await getUserById({ userId });
 
   return (

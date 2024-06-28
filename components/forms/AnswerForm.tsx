@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "../ui/form";
-import { AnswerSchema, answerSchema } from "@/lib/validations";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Editor } from "@tinymce/tinymce-react";
-import { useCallback, useRef, useState } from "react";
-import { useTheme } from "@/context/ThemeProvider";
-import { Button } from "../ui/button";
-import Image from "next/image";
-import { createAnswer } from "@/lib/actions/answer.action";
-import { usePathname } from "next/navigation";
-import { toast } from "sonner";
+} from '../ui/form';
+import { AnswerSchema, answerSchema } from '@/lib/validations';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Editor } from '@tinymce/tinymce-react';
+import { useCallback, useRef, useState } from 'react';
+import { useTheme } from '@/context/ThemeProvider';
+import { Button } from '../ui/button';
+import Image from 'next/image';
+import { createAnswer } from '@/lib/actions/answer.action';
+import { usePathname } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface Props {
   question: string;
@@ -33,9 +33,9 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
   const form = useForm<AnswerSchema>({
     resolver: zodResolver(answerSchema),
     defaultValues: {
-      answer: "",
+      answer: '',
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const handleCreateAnswer = async (values: AnswerSchema) => {
@@ -49,21 +49,21 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
             path: pathname,
           }),
           {
-            loading: "Submitting answer...",
+            loading: 'Submitting answer...',
             success: () => {
               form.reset();
               resolve();
-              return "Answer submitted successfully.";
+              return 'Answer submitted successfully.';
             },
             error: (error) => {
-              reject(new Error(""));
-              return error.message || "Some error occurred.";
+              reject(new Error(''));
+              return error.message || 'Some error occurred.';
             },
           },
         );
       });
     } catch (error: any) {
-      toast.error(error.message || "Error generating answer...");
+      toast.error(error.message || 'Error generating answer...');
     }
   };
 
@@ -74,32 +74,35 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
 
     toast.promise(
       fetch(`/api/chatgpt`, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify({ question }),
       }),
       {
-        loading: "Generating AI answer...",
+        loading: 'Generating AI answer...',
         success: async (res) => {
+          const data = await res.json();
           if (res.ok) {
-            const data = await res.json();
             const replyString: string = data?.reply;
 
             const language = replyString
               ?.match(/```[A-Za-z]+/gi)?.[0]
-              ?.replace("```", "");
+              ?.replace('```', '');
 
             const reply = replyString
-              ?.replace(/\n/g, "<br />")
+              ?.replace(/\n/g, '<br />')
               ?.replace(/```[A-Za-z]+/g, `<pre class="language-${language}">`)
-              ?.replace(/```/g, "</pre>");
+              ?.replace(/```/g, '</pre>');
 
-            form.setValue("answer", reply);
-            return "Answer generated.";
+            form.setValue('answer', reply);
+            return 'Answer generated.';
           } else {
-            throw res;
+            return data.error;
           }
         },
-        error: (error) => error.message || "Some error occurred.",
+        error: async (error) => {
+          console.log(error);
+          return error.message || 'Some error occured.';
+        },
         finally: () => {
           setIsSubmittingAI(false);
         },
@@ -123,7 +126,7 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
           ) : (
             <>
               <Image
-                src={"/assets/icons/stars.svg"}
+                src={'/assets/icons/stars.svg'}
                 alt="star"
                 width={12}
                 height={12}
@@ -157,27 +160,27 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
                       height: 350,
                       menubar: false,
                       plugins: [
-                        "advlist",
-                        "autolink",
-                        "lists",
-                        "link",
-                        "image",
-                        "charmap",
-                        "anchor",
-                        "searchreplace",
-                        "visualblocks",
-                        "codesample",
-                        "fullscreen",
-                        "insertdatetime",
-                        "media",
-                        "table",
-                        "preview",
+                        'advlist',
+                        'autolink',
+                        'lists',
+                        'link',
+                        'image',
+                        'charmap',
+                        'anchor',
+                        'searchreplace',
+                        'visualblocks',
+                        'codesample',
+                        'fullscreen',
+                        'insertdatetime',
+                        'media',
+                        'table',
+                        'preview',
                       ],
                       toolbar:
-                        "undo redo | codesample | bold italic forecolor | alignleft aligncenter | alignright alignjustify | bullist numlist",
+                        'undo redo | codesample | bold italic forecolor | alignleft aligncenter | alignright alignjustify | bullist numlist',
                       // content_style:
                       //   "body { font-family:  ; font-size: 16px }",
-                      skin: mode === "dark" ? "oxide-dark" : "oxide",
+                      skin: mode === 'dark' ? 'oxide-dark' : 'oxide',
                       content_css: mode,
                     }}
                   />
@@ -192,7 +195,7 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
               className="primary-gradient w-fit text-white"
               disabled={form.formState.isSubmitting || isSubmittingAI}
             >
-              {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+              {form.formState.isSubmitting ? 'Submitting...' : 'Submit'}
             </Button>
           </div>
         </form>

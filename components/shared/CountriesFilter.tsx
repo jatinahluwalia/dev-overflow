@@ -8,6 +8,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "../ui/command";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -74,18 +75,20 @@ const CountriesFilter = ({ data }: Props) => {
             placeholder="Search for countries..."
             className="bg-transparent"
           />
-          <CommandGroup className="custom-scrollbar h-52 overflow-y-auto bg-transparent ">
-            {data.map((country) => (
-              <CommandItem
-                key={country}
-                value={country}
-                className="cursor-pointer data-[selected=true]:!bg-light-800 dark:data-[selected=true]:!bg-dark-400"
-                onSelect={handleFilter}
-              >
-                {country}
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          <CommandList>
+            <CommandGroup className="custom-scrollbar h-52 overflow-y-auto bg-transparent ">
+              {data.map((country) => (
+                <CommandItem
+                  key={country}
+                  value={country}
+                  className="cursor-pointer data-[selected=true]:!bg-light-800 dark:data-[selected=true]:!bg-dark-400"
+                  onSelect={handleFilter}
+                >
+                  {country}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

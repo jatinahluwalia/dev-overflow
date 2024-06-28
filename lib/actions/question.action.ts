@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import Question, { IQuestion } from "@/database/question.model";
-import { connectDB } from "../mongoose";
-import Tag, { ITag } from "@/database/tag.model";
-import { revalidatePath } from "next/cache";
+import Question, { IQuestion } from '@/database/question.model';
+import { connectDB } from '../mongoose';
+import Tag, { ITag } from '@/database/tag.model';
+import { revalidatePath } from 'next/cache';
 import {
   CreateQuestionParams,
   DeleteQuestionParams,
@@ -13,35 +13,35 @@ import {
   GetQuestionsParams,
   QuestionVoteParams,
   RecommendedParams,
-} from "./shared.types";
-import User, { IUser } from "@/database/user.model";
-import Answer from "@/database/answer.model";
-import Interaction from "@/database/interaction.model";
-import { FilterQuery } from "mongoose";
-import { getMongoId } from "../auth";
+} from './shared.types';
+import User, { IUser } from '@/database/user.model';
+import Answer from '@/database/answer.model';
+import Interaction from '@/database/interaction.model';
+import { FilterQuery } from 'mongoose';
+import { getMongoId } from '../auth';
 
 export const getQuestions = async (params: GetQuestionsParams) => {
   try {
     await connectDB();
-    const { page = 1, pageSize = 10, searchQuery = "", filter } = params;
+    const { page = 1, pageSize = 10, searchQuery = '', filter } = params;
 
     const query: FilterQuery<IQuestion> = {
       $or: [
-        { title: { $regex: new RegExp(searchQuery, "i") } },
-        { content: { $regex: new RegExp(searchQuery, "i") } },
+        { title: { $regex: new RegExp(searchQuery, 'i') } },
+        { content: { $regex: new RegExp(searchQuery, 'i') } },
       ],
     };
 
-    if (filter === "unanswered") query.answers = { $size: 0 };
+    if (filter === 'unanswered') query.answers = { $size: 0 };
 
     let sortOptions = {};
 
     switch (filter) {
-      case "newest": {
+      case 'newest': {
         sortOptions = { createdAt: -1 };
         break;
       }
-      case "frequent": {
+      case 'frequent': {
         sortOptions = { views: -1 };
         break;
       }
@@ -58,10 +58,10 @@ export const getQuestions = async (params: GetQuestionsParams) => {
         author: IUser;
       }>([
         {
-          path: "tags",
+          path: 'tags',
           model: Tag,
         },
-        { path: "author", model: User },
+        { path: 'author', model: User },
       ])
       .sort(sortOptions);
 
@@ -79,7 +79,7 @@ export const getQuestions = async (params: GetQuestionsParams) => {
 export const createQuestion = async (params: CreateQuestionParams) => {
   try {
     const { title, content, tags, author, path } = params;
-    if ((await getMongoId()) !== author) throw new Error("Action not allowed");
+    if ((await getMongoId()) !== author) throw new Error('Action not allowed');
     await connectDB();
     const question = await Question.create({
       title,
@@ -91,7 +91,7 @@ export const createQuestion = async (params: CreateQuestionParams) => {
 
     for (const tag of tags) {
       const existingTag = await Tag.findOneAndUpdate(
-        { name: { $regex: new RegExp(`^${tag}$`, "i") } },
+        { name: { $regex: new RegExp(`^${tag}$`, 'i') } },
         {
           $setOnInsert: { name: tag },
           $addToSet: {
@@ -110,7 +110,7 @@ export const createQuestion = async (params: CreateQuestionParams) => {
 
     await Interaction.create({
       user: author,
-      action: "ask_question",
+      action: 'ask_question',
       question: question.id,
       tags: tagDocs,
     });
@@ -133,14 +133,14 @@ export const getQuestionById = async (params: GetQuestionByIdParams) => {
     const { questionId } = params;
     const question = Question.findById(questionId)
       .populate<{ tags: ITag[] }>({
-        path: "tags",
+        path: 'tags',
         model: Tag,
-        select: "_id name",
+        select: '_id name',
       })
       .populate<{ author: IUser }>({
-        path: "author",
+        path: 'author',
         model: User,
-        select: "_id clerkId name picture",
+        select: '_id clerkId name picture',
       });
     return question!;
   } catch (error) {
@@ -152,7 +152,7 @@ export const getQuestionById = async (params: GetQuestionByIdParams) => {
 export const upvoteQuestion = async (params: QuestionVoteParams) => {
   try {
     const { hasdownVoted, hasupVoted, path, questionId, userId } = params;
-    if ((await getMongoId()) !== userId) throw new Error("Action not allowed");
+    if ((await getMongoId()) !== userId) throw new Error('Action not allowed');
     await connectDB();
 
     let updateQuery = {};
@@ -172,7 +172,7 @@ export const upvoteQuestion = async (params: QuestionVoteParams) => {
     });
 
     if (!question) {
-      throw new Error("Question not found");
+      throw new Error('Question not found');
     }
 
     await User.findByIdAndUpdate(userId, {
@@ -192,7 +192,7 @@ export const upvoteQuestion = async (params: QuestionVoteParams) => {
 export const downvoteQuestion = async (params: QuestionVoteParams) => {
   try {
     const { hasdownVoted, hasupVoted, path, questionId, userId } = params;
-    if ((await getMongoId()) !== userId) throw new Error("Action not allowed");
+    if ((await getMongoId()) !== userId) throw new Error('Action not allowed');
     await connectDB();
     let updateQuery = {};
     if (hasdownVoted) {
@@ -211,7 +211,7 @@ export const downvoteQuestion = async (params: QuestionVoteParams) => {
     });
 
     if (!question) {
-      throw new Error("Question not found");
+      throw new Error('Question not found');
     }
 
     await User.findByIdAndUpdate(userId, {
@@ -233,7 +233,7 @@ export const getQuestionsByTag = async (params: GetQuestionsByTagIdParams) => {
   try {
     await connectDB();
 
-    const { tagId, page = 1, pageSize = 10, searchQuery = "" } = params;
+    const { tagId, page = 1, pageSize = 10, searchQuery = '' } = params;
 
     // const tag = await Tag.findById(tagId)
     //   .populate<{
@@ -278,15 +278,15 @@ export const getQuestionsByTag = async (params: GetQuestionsByTagIdParams) => {
 
     const tag = await Tag.findById(tagId);
 
-    if (!tag) throw new Error("Tag not found");
+    if (!tag) throw new Error('Tag not found');
 
     const query: FilterQuery<IQuestion> = {
       $or: [
         {
-          title: { $regex: new RegExp(searchQuery, "i") },
+          title: { $regex: new RegExp(searchQuery, 'i') },
         },
         {
-          content: { $regex: new RegExp(searchQuery, "i") },
+          content: { $regex: new RegExp(searchQuery, 'i') },
         },
       ],
       tags: tagId,
@@ -297,14 +297,14 @@ export const getQuestionsByTag = async (params: GetQuestionsByTagIdParams) => {
       .limit(pageSize)
       .populate<{ author: IUser; tags: ITag[] }>([
         {
-          path: "author",
+          path: 'author',
           model: User,
-          select: "_id name picture clerkId",
+          select: '_id name picture clerkId',
         },
         {
-          path: "tags",
+          path: 'tags',
           model: Tag,
-          select: "_id name",
+          select: '_id name',
         },
       ]);
 
@@ -353,7 +353,7 @@ export const editQuestion = async (params: EditQuestionParams) => {
     );
 
     if (!updatedQuestion)
-      throw new Error("Either question not found or you are not authorized");
+      throw new Error('Either question not found or you are not authorized');
 
     revalidatePath(path);
   } catch (error) {
@@ -381,22 +381,22 @@ export const getHotQuestions = async () => {
 
 export const getRecommendedQuestions = async (params: RecommendedParams) => {
   try {
-    const { userId, page = 1, pageSize = 10, searchQuery = "" } = params;
+    const { userId, page = 1, pageSize = 10, searchQuery = '' } = params;
 
     const user = await User.findOne({ clerkId: userId });
 
-    if (!user) throw new Error("User not found.");
+    if (!user) throw new Error('User not found.');
 
     const userInteractionsTags = await Interaction.find({
       user: user.id,
-    }).distinct("tags");
+    }).distinct('tags');
 
     const query: FilterQuery<IQuestion> = {
       tags: { $in: userInteractionsTags },
       author: { $ne: user.id },
       $or: [
-        { title: { $regex: new RegExp(searchQuery, "i") } },
-        { content: { $regex: new RegExp(searchQuery, "i") } },
+        { title: { $regex: new RegExp(searchQuery, 'i') } },
+        { content: { $regex: new RegExp(searchQuery, 'i') } },
       ],
     };
 
@@ -405,14 +405,14 @@ export const getRecommendedQuestions = async (params: RecommendedParams) => {
       .limit(pageSize)
       .populate<{ author: IUser; tags: ITag[] }>([
         {
-          path: "author",
+          path: 'author',
           model: User,
-          select: "_id name picture username",
+          select: '_id name picture username',
         },
         {
-          path: "tags",
+          path: 'tags',
           model: Tag,
-          select: "_id name",
+          select: '_id name',
         },
       ]);
 

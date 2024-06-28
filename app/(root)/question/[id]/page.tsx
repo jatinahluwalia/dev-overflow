@@ -1,23 +1,24 @@
-import Metric from "@/components/shared/Metric";
-import { getQuestionById } from "@/lib/actions/question.action";
-import { numberFormatter, dateFormatter } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import ParseHTML from "@/components/shared/ParseHTML";
-import RenderTag from "@/components/shared/RenderTag";
-import AnswerForm from "@/components/forms/AnswerForm";
-import { auth } from "@clerk/nextjs";
-import { getUserById } from "@/lib/actions/user.action";
-import AllAnswers from "@/components/shared/AllAnswers";
-import Votes from "@/components/shared/Votes";
-import { URLProps } from "@/types";
+import Metric from '@/components/shared/Metric';
+import { getQuestionById } from '@/lib/actions/question.action';
+import { numberFormatter, dateFormatter } from '@/lib/utils';
+import Image from 'next/image';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import ParseHTML from '@/components/shared/ParseHTML';
+import RenderTag from '@/components/shared/RenderTag';
+import AnswerForm from '@/components/forms/AnswerForm';
+import { auth } from '@clerk/nextjs/server';
+import { getUserById } from '@/lib/actions/user.action';
+import AllAnswers from '@/components/shared/AllAnswers';
+import Votes from '@/components/shared/Votes';
+import { URLProps } from '@/types';
+import { IUser } from '@/database/user.model';
 
 const Page = async ({ params: { id }, searchParams }: URLProps) => {
   const result = await getQuestionById({ questionId: id });
-  if (!result) redirect("/");
+  if (!result) redirect('/');
   const { userId } = auth();
-  let mongoUser;
+  let mongoUser: IUser;
   if (userId) mongoUser = await getUserById({ userId });
   return (
     <>
@@ -28,7 +29,7 @@ const Page = async ({ params: { id }, searchParams }: URLProps) => {
             className="flex items-center justify-start gap-1"
           >
             <Image
-              src={result.author.picture || ""}
+              src={result.author.picture || ''}
               alt="Profile Photo"
               className="rounded-full"
               width={22}
@@ -44,10 +45,10 @@ const Page = async ({ params: { id }, searchParams }: URLProps) => {
               itemId={result.id}
               userId={mongoUser?.id}
               upvotes={result.upvotes.length}
-              hasUpvoted={result.upvotes.includes(mongoUser?._id)}
+              hasUpvoted={result.upvotes.includes(mongoUser?.id)}
               downvotes={result.downvotes.length}
-              hasDownvoted={result.downvotes.includes(mongoUser?._id)}
-              hasSaved={mongoUser?.saved.includes(result._id)}
+              hasDownvoted={result.downvotes.includes(mongoUser?.id)}
+              hasSaved={mongoUser?.saved.includes(result.id)}
             />
           </div>
         </div>
@@ -96,7 +97,7 @@ const Page = async ({ params: { id }, searchParams }: URLProps) => {
         userId={mongoUser?.id}
         totalAnswers={result.answers.length}
         filter={searchParams.filter}
-        page={+(searchParams.page || "1")}
+        page={+(searchParams.page || '1')}
       />
 
       {mongoUser && (
