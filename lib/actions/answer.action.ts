@@ -1,17 +1,17 @@
-"use server";
+'use server';
 
-import Answer from "@/database/answer.model";
+import Answer from '@/database/answer.model';
 import {
   AnswerVoteParams,
   CreateAnswerParams,
   DeleteAnswerParams,
   GetAnswersParams,
-} from "./shared.types";
-import { connectDB } from "../mongoose";
-import Question from "@/database/question.model";
-import { revalidatePath } from "next/cache";
-import User, { IUser } from "@/database/user.model";
-import Interaction from "@/database/interaction.model";
+} from './shared.types';
+import { connectDB } from '../mongoose';
+import Question from '@/database/question.model';
+import { revalidatePath } from 'next/cache';
+import User, { IUser } from '@/database/user.model';
+import Interaction from '@/database/interaction.model';
 
 export const createAnswer = async (params: CreateAnswerParams) => {
   try {
@@ -24,11 +24,11 @@ export const createAnswer = async (params: CreateAnswerParams) => {
       $push: { answers: newAnswer.id },
     });
 
-    if (!questionDoc) throw new Error("Question not found");
+    if (!questionDoc) throw new Error('Question not found');
 
     await Interaction.create({
       user: author,
-      action: "answer",
+      action: 'answer',
       question,
       tags: questionDoc.tags,
       answer: newAnswer.id,
@@ -51,16 +51,16 @@ export const getAllAnswers = async (params: GetAnswersParams) => {
     let sortOptions = {};
 
     switch (sortBy) {
-      case "highestUpvotes":
+      case 'highestUpvotes':
         sortOptions = { upvotes: -1 };
         break;
-      case "lowestUpvotes":
+      case 'lowestUpvotes':
         sortOptions = { upvotes: 1 };
         break;
-      case "recent":
+      case 'recent':
         sortOptions = { createdAt: -1 };
         break;
-      case "old":
+      case 'old':
         sortOptions = { createdAt: 1 };
         break;
 
@@ -72,9 +72,9 @@ export const getAllAnswers = async (params: GetAnswersParams) => {
       .populate<{
         author: IUser;
       }>({
-        path: "author",
+        path: 'author',
         model: User,
-        select: "_id clerkId name picture",
+        select: '_id clerkId name picture',
       })
       .skip((page - 1) * pageSize)
       .limit(pageSize)
@@ -116,7 +116,7 @@ export const upvoteAnswer = async (params: AnswerVoteParams) => {
       new: true,
     });
 
-    if (!answer) throw new Error("Answer not found");
+    if (!answer) throw new Error('Answer not found');
 
     await User.findByIdAndUpdate(userId, {
       $inc: { reputation: hasupVoted ? -2 : 2 },
@@ -155,7 +155,7 @@ export const downvoteAnswer = async (params: AnswerVoteParams) => {
       new: true,
     });
 
-    if (!answer) throw new Error("Answer not found");
+    if (!answer) throw new Error('Answer not found');
 
     await User.findByIdAndUpdate(userId, {
       $inc: { reputation: hasdownVoted ? -2 : 2 },

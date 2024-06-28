@@ -1,14 +1,14 @@
-import Filter from "@/components/shared/Filter";
-import NoResult from "@/components/shared/NoResult";
-import Pagination from "@/components/shared/Pagination";
-import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
-import { TagFilters } from "@/constants/filters";
-import { getAllTags } from "@/lib/actions/tag.action";
-import { SearchParamsProps } from "@/types";
-import Link from "next/link";
+import Filter from '@/components/shared/Filter';
+import NoResult from '@/components/shared/NoResult';
+import Pagination from '@/components/shared/Pagination';
+import LocalSearchbar from '@/components/shared/search/LocalSearchbar';
+import { TagFilters } from '@/constants/filters';
+import { getAllTags } from '@/lib/actions/tag.action';
+import { SearchParamsProps } from '@/types';
+import Link from 'next/link';
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
-  const page = +(searchParams.page || "1");
+  const page = +(searchParams.page || '1');
   const result = await getAllTags({
     searchQuery: searchParams.q,
     filter: searchParams.filter,
@@ -35,8 +35,8 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
         {result.tags.length > 0 ? (
           result.tags.map((tag) => (
             <Link
-              href={`/tags/${tag._id}`}
-              key={tag._id}
+              href={`/tags/${tag.id}`}
+              key={tag.id}
               className="shadow-light100_darknone"
             >
               <article className="background-light900_dark200 light-border flex w-full flex-col rounded-2xl border px-8 py-10 sm:w-[260px]">
@@ -48,7 +48,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
                 <p className="small-medium text-dark400_light500 mt-3.5">
                   <span className="body-semibold primary-text-gradient mr-2.5">
                     {tag.questions.length}+
-                  </span>{" "}
+                  </span>{' '}
                   Questions
                 </p>
               </article>

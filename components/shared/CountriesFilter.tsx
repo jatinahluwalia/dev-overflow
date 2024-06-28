@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { Button } from "../ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import Image from 'next/image';
+import { Button } from '../ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import {
   Command,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-} from "../ui/command";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { formQueryURL, removeQueryKeys } from "@/lib/utils";
+} from '../ui/command';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { formQueryURL, removeQueryKeys } from '@/lib/utils';
 
 interface Props {
   data: string[];
@@ -23,7 +23,7 @@ const CountriesFilter = ({ data }: Props) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const filter = searchParams.get("location") || "";
+  const filter = searchParams.get('location') || '';
 
   const [active, setActive] = useState(filter);
   const [open, setOpen] = useState(false);
@@ -31,17 +31,17 @@ const CountriesFilter = ({ data }: Props) => {
   const handleFilter = (value: string) => {
     setOpen(false);
     if (value === active) {
-      setActive("");
+      setActive('');
       const queries = removeQueryKeys({
         params: searchParams.toString(),
-        keys: ["location"],
+        keys: ['location'],
       });
       router.push(`${pathname}?${queries}`);
     } else {
       setActive(value);
       const queries = formQueryURL({
         params: searchParams.toString(),
-        key: "location",
+        key: 'location',
         value,
       });
       router.push(`${pathname}?${queries}`);
@@ -54,16 +54,16 @@ const CountriesFilter = ({ data }: Props) => {
           <Image
             height={24}
             width={24}
-            src={"/assets/icons/location.svg"}
+            src={'/assets/icons/location.svg'}
             alt="location"
           />
           <p className="text-light400_light500 paragraph-regular capitalize">
-            {active || "Select Location"}
+            {active || 'Select Location'}
           </p>
           <Image
             height={24}
             width={24}
-            src={"/assets/icons/chevron-down.svg"}
+            src={'/assets/icons/chevron-down.svg'}
             alt="chevron"
             className="ml-auto"
           />
@@ -76,7 +76,7 @@ const CountriesFilter = ({ data }: Props) => {
             className="bg-transparent"
           />
           <CommandList>
-            <CommandGroup className="custom-scrollbar h-52 overflow-y-auto bg-transparent ">
+            <CommandGroup className="custom-scrollbar h-52 overflow-y-auto bg-transparent">
               {data.map((country) => (
                 <CommandItem
                   key={country}

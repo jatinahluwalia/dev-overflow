@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { IUser } from "@/database/user.model";
+import { IUser } from '@/database/user.model';
 import {
   Form,
   FormControl,
@@ -8,36 +8,36 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../ui/input";
-import { UserSchema, userSchema } from "@/lib/validations";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
-import { updateUser } from "@/lib/actions/user.action";
-import { usePathname, useRouter } from "next/navigation";
-import { toast } from "sonner";
+} from '../ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Input } from '../ui/input';
+import { UserSchema, userSchema } from '@/lib/validations';
+import { Textarea } from '../ui/textarea';
+import { Button } from '../ui/button';
+import { updateUser } from '@/lib/actions/user.action';
+import { usePathname, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface Props {
   clerkId: string;
   user: string;
 }
 const ProfileForm = ({ clerkId, user }: Props) => {
-  const parsedUser: Omit<IUser, "id"> = JSON.parse(user);
+  const parsedUser: Omit<IUser, 'id'> = JSON.parse(user);
   const router = useRouter();
   const pathname = usePathname();
 
   const form = useForm<UserSchema>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      name: parsedUser.name || "",
-      username: parsedUser.username || "",
-      bio: parsedUser.bio || "",
-      portfolioWebsite: parsedUser.portfolioWebsite || "",
-      location: parsedUser.location || "",
+      name: parsedUser.name || '',
+      username: parsedUser.username || '',
+      bio: parsedUser.bio || '',
+      portfolioWebsite: parsedUser.portfolioWebsite || '',
+      location: parsedUser.location || '',
     },
-    mode: "all",
+    mode: 'all',
   });
   const onSubmit = (values: UserSchema) => {
     return new Promise<void>((resolve) => {
@@ -46,11 +46,11 @@ const ProfileForm = ({ clerkId, user }: Props) => {
         {
           success: () => {
             router.back();
-            return "Profile edited successfully.";
+            return 'Profile edited successfully.';
           },
-          loading: "Editing profile...",
+          loading: 'Editing profile...',
           error: (error) => {
-            return error.message || "Some error occurred.";
+            return error.message || 'Some error occurred.';
           },
           finally: () => {
             resolve();
@@ -184,7 +184,7 @@ const ProfileForm = ({ clerkId, user }: Props) => {
             className="primary-gradient w-fit text-light-900 transition-all active:scale-90"
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? "Saving" : "Save"}
+            {form.formState.isSubmitting ? 'Saving' : 'Save'}
           </Button>
         </div>
       </form>

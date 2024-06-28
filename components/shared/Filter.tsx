@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Select,
   SelectContent,
@@ -8,9 +8,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { formQueryURL, removeQueryKeys } from "@/lib/utils";
-import { useState } from "react";
+} from '../ui/select';
+import { formQueryURL, removeQueryKeys } from '@/lib/utils';
+import { useState } from 'react';
 
 interface Props {
   filters: { name: string; value: string }[];
@@ -24,21 +24,21 @@ const Filter = ({ filters, containerClasses, otherClasses }: Props) => {
   const pathname = usePathname();
 
   const [selectedFilter, setSelectedFilter] = useState(
-    searchParams.get("filter") || undefined,
+    searchParams.get('filter') || undefined,
   );
 
   const handleFilterChange = (filter: string) => {
-    if (filter === "clear") {
+    if (filter === 'clear') {
       setSelectedFilter(undefined);
       const queries = removeQueryKeys({
         params: searchParams.toString(),
-        keys: ["filter"],
+        keys: ['filter'],
       });
       router.push(`${pathname}?${queries}`);
     } else {
       setSelectedFilter(filter);
       const queries = formQueryURL({
-        key: "filter",
+        key: 'filter',
         params: searchParams.toString(),
         value: filter,
       });

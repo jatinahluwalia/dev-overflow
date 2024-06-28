@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Button } from "../ui/button";
-import { formQueryURL } from "@/lib/utils";
-import { useEffect } from "react";
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Button } from '../ui/button';
+import { formQueryURL } from '@/lib/utils';
+import { useEffect } from 'react';
 
 interface Props {
   pageNumber: number;
@@ -16,10 +16,10 @@ const Pagination = ({ pageNumber = 1, isNext = false }: Props) => {
   const searchParams = useSearchParams();
   const handleNavigation = (direction: string) => {
     const nextPageNumber =
-      direction === "prev" ? pageNumber - 1 : pageNumber + 1;
+      direction === 'prev' ? pageNumber - 1 : pageNumber + 1;
     const queries = formQueryURL({
       params: searchParams.toString(),
-      key: "page",
+      key: 'page',
       value: `${nextPageNumber}`,
     });
     router.push(`${pathname}?${queries}`);
@@ -33,7 +33,7 @@ const Pagination = ({ pageNumber = 1, isNext = false }: Props) => {
     <div className="flex w-full items-center justify-center gap-2">
       <Button
         disabled={pageNumber === 1}
-        onClick={() => handleNavigation("prev")}
+        onClick={() => handleNavigation('prev')}
         className="light-border-2 btn flex min-h-[36px] items-center justify-center gap-2 border"
       >
         <p className="body-medium text-dark200_light800">Prev</p>
@@ -43,7 +43,7 @@ const Pagination = ({ pageNumber = 1, isNext = false }: Props) => {
       </div>
       <Button
         disabled={!isNext}
-        onClick={() => handleNavigation("next")}
+        onClick={() => handleNavigation('next')}
         className="light-border-2 btn flex min-h-[36px] items-center justify-center gap-2 border"
       >
         <p className="body-medium text-dark200_light800">Next</p>

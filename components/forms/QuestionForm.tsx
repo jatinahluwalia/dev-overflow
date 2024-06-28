@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { KeyboardEvent, useRef } from "react";
-import { Editor } from "@tinymce/tinymce-react";
-import { ControllerRenderProps, useForm } from "react-hook-form";
-import { questionsSchema, QuestionsSchema } from "@/lib/validations";
+import { KeyboardEvent, useRef } from 'react';
+import { Editor } from '@tinymce/tinymce-react';
+import { ControllerRenderProps, useForm } from 'react-hook-form';
+import { questionsSchema, QuestionsSchema } from '@/lib/validations';
 import {
   Form,
   FormControl,
@@ -12,21 +12,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Badge } from "../ui/badge";
-import Image from "next/image";
-import { Button } from "../ui/button";
-import { createQuestion, editQuestion } from "@/lib/actions/question.action";
-import { usePathname, useRouter } from "next/navigation";
-import { useTheme } from "@/context/ThemeProvider";
-import { IQuestion } from "@/database/question.model";
-import { ITag } from "@/database/tag.model";
-import { IUser } from "@/database/user.model";
-import { toast } from "sonner";
+} from '../ui/form';
+import { Input } from '../ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Badge } from '../ui/badge';
+import Image from 'next/image';
+import { Button } from '../ui/button';
+import { createQuestion, editQuestion } from '@/lib/actions/question.action';
+import { usePathname, useRouter } from 'next/navigation';
+import { useTheme } from '@/context/ThemeProvider';
+import { IQuestion } from '@/database/question.model';
+import { ITag } from '@/database/tag.model';
+import { IUser } from '@/database/user.model';
+import { toast } from 'sonner';
 
-type QuestionDetails = Omit<IQuestion, "tags" | "author"> & {
+type QuestionDetails = Omit<IQuestion, 'tags' | 'author'> & {
   tags: ITag[];
   author: IUser;
 };
@@ -34,7 +34,7 @@ type QuestionDetails = Omit<IQuestion, "tags" | "author"> & {
 interface Props {
   mongoUserId: string;
   questionDetails?: string;
-  type?: "edit" | "create";
+  type?: 'edit' | 'create';
 }
 
 const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
@@ -53,33 +53,33 @@ const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
 
   const form = useForm<QuestionsSchema>({
     defaultValues: {
-      title: parsedQuestionDetails.title || "",
-      explaination: parsedQuestionDetails.content || "",
+      title: parsedQuestionDetails.title || '',
+      explaination: parsedQuestionDetails.content || '',
       tags: tagsValue || [],
     },
-    mode: "all",
+    mode: 'all',
     resolver: zodResolver(questionsSchema),
   });
 
   const handleKeyDown = (
     e: KeyboardEvent<HTMLInputElement>,
-    field: ControllerRenderProps<QuestionsSchema, "tags">,
+    field: ControllerRenderProps<QuestionsSchema, 'tags'>,
   ) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       const tagInput = e.target as HTMLInputElement;
       const tagValue = tagInput.value.trim();
-      if (tagValue !== "") {
+      if (tagValue !== '') {
         if (tagValue.length > 15) {
-          return form.setError("tags", {
-            type: "required",
-            message: "Tag length should not be greater than 15 characters.",
+          return form.setError('tags', {
+            type: 'required',
+            message: 'Tag length should not be greater than 15 characters.',
           });
         }
         if (!field.value.includes(tagValue)) {
-          form.setValue("tags", [...field.value, tagValue]);
-          tagInput.value = "";
-          form.clearErrors("tags");
+          form.setValue('tags', [...field.value, tagValue]);
+          tagInput.value = '';
+          form.clearErrors('tags');
         }
       } else {
         form.trigger();
@@ -89,29 +89,29 @@ const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
 
   const handleTagRemove = (
     tag: string,
-    field: ControllerRenderProps<QuestionsSchema, "tags">,
+    field: ControllerRenderProps<QuestionsSchema, 'tags'>,
   ) => {
     const newTags = field.value.filter((t: string) => tag !== t);
-    form.setValue("tags", newTags);
+    form.setValue('tags', newTags);
   };
 
   const onSubmit = (values: QuestionsSchema) => {
     return new Promise<void>((resolve) => {
-      if (type === "edit") {
+      if (type === 'edit') {
         toast.promise(
           editQuestion({
-            questionId: parsedQuestionDetails._id,
+            questionId: parsedQuestionDetails.id,
             title: values.title,
             content: values.explaination,
             path: pathname,
           }),
           {
-            loading: "Editing question...",
+            loading: 'Editing question...',
             success: () => {
-              router.push(`/question/${parsedQuestionDetails._id}`);
-              return "Question edited successfully.";
+              router.push(`/question/${parsedQuestionDetails.id}`);
+              return 'Question edited successfully.';
             },
-            error: (error) => error.message || "Some error occurred.",
+            error: (error) => error.message || 'Some error occurred.',
             finally: () => {
               resolve();
             },
@@ -127,12 +127,12 @@ const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
             author: mongoUserId,
           }),
           {
-            loading: "Asking question...",
+            loading: 'Asking question...',
             success: (id) => {
               router.push(`/question/${id}`);
-              return "Question added successfully.";
+              return 'Question added successfully.';
             },
-            error: (error) => error.message || "Some error occurred.",
+            error: (error) => error.message || 'Some error occurred.',
             finally: () => {
               resolve();
             },
@@ -186,34 +186,34 @@ const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
                   onBlur={field.onBlur}
                   value={field.value}
                   onEditorChange={field.onChange}
-                  initialValue={parsedQuestionDetails.content || ""}
+                  initialValue={parsedQuestionDetails.content || ''}
                   init={{
                     height: 350,
                     menubar: false,
                     plugins: [
-                      "advlist",
-                      "autolink",
-                      "lists",
-                      "link",
-                      "image",
-                      "charmap",
-                      "anchor",
-                      "searchreplace",
-                      "visualblocks",
-                      "codesample",
-                      "fullscreen",
-                      "insertdatetime",
-                      "media",
-                      "table",
-                      "preview",
+                      'advlist',
+                      'autolink',
+                      'lists',
+                      'link',
+                      'image',
+                      'charmap',
+                      'anchor',
+                      'searchreplace',
+                      'visualblocks',
+                      'codesample',
+                      'fullscreen',
+                      'insertdatetime',
+                      'media',
+                      'table',
+                      'preview',
                     ],
                     toolbar:
-                      "undo redo | " +
-                      "codesample | bold italic forecolor | alignleft aligncenter | " +
-                      "alignright alignjustify | bullist numlist",
+                      'undo redo | ' +
+                      'codesample | bold italic forecolor | alignleft aligncenter | ' +
+                      'alignright alignjustify | bullist numlist',
                     // content_style:
                     //   "body { font-family: Inter; font-size: 16px }",
-                    skin: mode === "dark" ? "oxide-dark" : "oxide",
+                    skin: mode === 'dark' ? 'oxide-dark' : 'oxide',
                     content_css: mode,
                   }}
                 />
@@ -237,7 +237,7 @@ const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
               <FormControl className="mt-3.5">
                 <>
                   <Input
-                    disabled={type === "edit"}
+                    disabled={type === 'edit'}
                     placeholder="Add Tags..."
                     className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border"
                     onKeyDown={(e) => handleKeyDown(e, field)}
@@ -250,9 +250,9 @@ const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
                           className="subtle-medium background-light800_dark300 text-light400_light500 flex items-center justify-center gap-2 rounded-md border-none px-4 py-2 capitalize"
                         >
                           {tag}
-                          {type !== "edit" && (
+                          {type !== 'edit' && (
                             <Image
-                              src={"/assets/icons/close.svg"}
+                              src={'/assets/icons/close.svg'}
                               alt="close"
                               width={12}
                               height={12}
@@ -280,9 +280,9 @@ const QuestionForm = ({ mongoUserId, questionDetails, type }: Props) => {
           disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? (
-            <>{type === "edit" ? "Editing..." : "Posting"}</>
+            <>{type === 'edit' ? 'Editing...' : 'Posting'}</>
           ) : (
-            <>{type === "edit" ? "Edit Question" : "Ask a Question"}</>
+            <>{type === 'edit' ? 'Edit Question' : 'Ask a Question'}</>
           )}
         </Button>
       </form>

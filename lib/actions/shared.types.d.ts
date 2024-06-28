@@ -1,5 +1,5 @@
-import { IUser } from "@/mongodb";
-import { BadgeCriteriaType } from "@/types";
+import { IUser } from '@/mongodb';
+import { BadgeCriteriaType } from '@/types';
 
 export interface CreateQuestionParams {
   title: string;

@@ -1,11 +1,11 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import qs from "query-string";
-import { CriteriaType } from "./actions/shared.types";
-import { BadgeCounts } from "@/types";
-import { BADGE_CRITERIA } from "@/constants";
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import qs from 'query-string';
+import { CriteriaType } from './actions/shared.types';
+import { BadgeCounts } from '@/types';
+import { BADGE_CRITERIA } from '@/constants';
 
 dayjs.extend(relativeTime);
 
@@ -13,8 +13,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const numberFormatter = Intl.NumberFormat("en", {
-  notation: "compact",
+export const numberFormatter = Intl.NumberFormat('en', {
+  notation: 'compact',
 }).format;
 
 export const dateFormatter = (date: Date) => dayjs(date).fromNow();

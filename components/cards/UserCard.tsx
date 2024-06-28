@@ -1,9 +1,9 @@
-import { IUser } from "@/database/user.model";
-import { getTopInteractedTags } from "@/lib/actions/tag.action";
-import Image from "next/image";
-import Link from "next/link";
-import { Badge } from "../ui/badge";
-import RenderTag from "../shared/RenderTag";
+import { IUser } from '@/database/user.model';
+import { getTopInteractedTags } from '@/lib/actions/tag.action';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Badge } from '../ui/badge';
+import RenderTag from '../shared/RenderTag';
 
 interface Props {
   user: IUser;
@@ -28,7 +28,7 @@ const UserCard = async ({ user }: Props) => {
         />
 
         <div className="mt-4 text-center">
-          <h3 className="h3-bold text-dark200_light900 line-clamp-1 ">
+          <h3 className="h3-bold text-dark200_light900 line-clamp-1">
             {user.name}
           </h3>
           <p className="body-regular text-dark500_light500 mt-2">

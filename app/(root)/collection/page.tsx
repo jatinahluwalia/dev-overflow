@@ -45,7 +45,7 @@ const Home = async ({ searchParams }: SearchParamsProps) => {
         {result.questions.length ? (
           result.questions.map((question) => (
             <QuestionCard
-              key={question._id}
+              key={question.id}
               _id={question.id}
               title={question.title}
               tags={question.tags}

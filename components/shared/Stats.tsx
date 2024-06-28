@@ -1,6 +1,6 @@
-import { numberFormatter } from "@/lib/utils";
-import { BadgeCounts } from "@/types";
-import Image from "next/image";
+import { numberFormatter } from '@/lib/utils';
+import { BadgeCounts } from '@/types';
+import Image from 'next/image';
 
 interface CardProps {
   imgUrl: string;

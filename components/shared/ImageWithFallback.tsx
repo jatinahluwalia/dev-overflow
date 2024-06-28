@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import Image, { ImageProps } from "next/image";
-import { useEffect, useState } from "react";
+import Image, { ImageProps } from 'next/image';
+import { useEffect, useState } from 'react';
 
 interface Props extends ImageProps {
   fallbackUrl?: string;
 }
 
 const ImageWithFallback = ({
-  fallbackUrl = "/assets/icons/fallback.svg",
+  fallbackUrl = '/assets/icons/fallback.svg',
   width,
   height,
   src,
@@ -18,8 +18,8 @@ const ImageWithFallback = ({
   const [Src, setSrc] = useState(src || fallbackUrl);
   useEffect(() => {
     if (
-      typeof src === "string" &&
-      src.startsWith("https://lookaside.fbsbx.com/")
+      typeof src === 'string' &&
+      src.startsWith('https://lookaside.fbsbx.com/')
     )
       setSrc(fallbackUrl);
   }, [src, fallbackUrl]);

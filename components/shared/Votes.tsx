@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { downvoteAnswer, upvoteAnswer } from "@/lib/actions/answer.action";
-import { viewQuestion } from "@/lib/actions/interaction.action";
+import { downvoteAnswer, upvoteAnswer } from '@/lib/actions/answer.action';
+import { viewQuestion } from '@/lib/actions/interaction.action';
 import {
   downvoteQuestion,
   upvoteQuestion,
-} from "@/lib/actions/question.action";
-import { saveQuestion } from "@/lib/actions/user.action";
-import { numberFormatter } from "@/lib/utils";
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { toast } from "sonner";
+} from '@/lib/actions/question.action';
+import { saveQuestion } from '@/lib/actions/user.action';
+import { numberFormatter } from '@/lib/utils';
+import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 interface Props {
-  type: "question" | "answer";
+  type: 'question' | 'answer';
   itemId: string;
   userId: string;
   upvotes: number;
@@ -38,7 +38,7 @@ const Votes = ({
   const router = useRouter();
   const handleSave = async () => {
     try {
-      if (type !== "question") return;
+      if (type !== 'question') return;
       await saveQuestion({ path: pathname, questionId: itemId, userId });
     } catch (error) {
       console.log(error);
@@ -46,18 +46,18 @@ const Votes = ({
   };
 
   useEffect(() => {
-    if (type === "question") viewQuestion({ questionId: itemId, userId });
+    if (type === 'question') viewQuestion({ questionId: itemId, userId });
   }, [pathname, router, itemId, userId, type]);
 
-  const handleVote = async (action: "upvote" | "downvote") => {
-    const upvoteToastMessage = hasUpvoted ? "Upvote removed" : "Upvote added";
+  const handleVote = async (action: 'upvote' | 'downvote') => {
+    const upvoteToastMessage = hasUpvoted ? 'Upvote removed' : 'Upvote added';
     const downvoteToastMessage = hasDownvoted
-      ? "Downvote removed"
-      : "Downvote added";
+      ? 'Downvote removed'
+      : 'Downvote added';
     switch (type) {
-      case "question": {
+      case 'question': {
         switch (action) {
-          case "upvote": {
+          case 'upvote': {
             await upvoteQuestion({
               hasdownVoted: hasDownvoted,
               hasupVoted: hasUpvoted,
@@ -68,7 +68,7 @@ const Votes = ({
             toast.success(upvoteToastMessage);
             break;
           }
-          case "downvote": {
+          case 'downvote': {
             await downvoteQuestion({
               hasdownVoted: hasDownvoted,
               hasupVoted: hasUpvoted,
@@ -82,9 +82,9 @@ const Votes = ({
         }
         break;
       }
-      case "answer": {
+      case 'answer': {
         switch (action) {
-          case "upvote": {
+          case 'upvote': {
             await upvoteAnswer({
               hasdownVoted: hasDownvoted,
               hasupVoted: hasUpvoted,
@@ -95,7 +95,7 @@ const Votes = ({
             toast.success(upvoteToastMessage);
             break;
           }
-          case "downvote": {
+          case 'downvote': {
             await downvoteAnswer({
               hasdownVoted: hasDownvoted,
               hasupVoted: hasUpvoted,
@@ -119,14 +119,14 @@ const Votes = ({
           <Image
             src={
               hasUpvoted
-                ? "/assets/icons/upvoted.svg"
-                : "/assets/icons/upvote.svg"
+                ? '/assets/icons/upvoted.svg'
+                : '/assets/icons/upvote.svg'
             }
             width={18}
             height={18}
             alt="upvote"
             className="cursor-pointer rounded-sm transition-all hover:bg-black/10 active:scale-75 dark:hover:bg-white/20"
-            onClick={() => handleVote("upvote")}
+            onClick={() => handleVote('upvote')}
           />
 
           <div className="flex-center background-light700_dark400 min-w-[18px] rounded-sm p-1">
@@ -139,14 +139,14 @@ const Votes = ({
           <Image
             src={
               hasDownvoted
-                ? "/assets/icons/downvoted.svg"
-                : "/assets/icons/downvote.svg"
+                ? '/assets/icons/downvoted.svg'
+                : '/assets/icons/downvote.svg'
             }
             width={18}
             height={18}
             alt="downvote"
             className="cursor-pointer rounded-sm transition-all hover:bg-black/10 active:scale-75 dark:hover:bg-white/20"
-            onClick={() => handleVote("downvote")}
+            onClick={() => handleVote('downvote')}
           />
 
           <div className="flex-center background-light700_dark400 min-w-[18px] rounded-sm p-1">
@@ -156,12 +156,12 @@ const Votes = ({
           </div>
         </div>
       </div>
-      {type === "question" && (
+      {type === 'question' && (
         <Image
           src={
             hasSaved
-              ? "/assets/icons/star-filled.svg"
-              : "/assets/icons/star-red.svg"
+              ? '/assets/icons/star-filled.svg'
+              : '/assets/icons/star-red.svg'
           }
           width={20}
           height={20}

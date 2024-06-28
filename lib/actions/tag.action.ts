@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
 // import User from "@/database/user.model";
-import { connectDB } from "../mongoose";
-import { GetAllTagsParams, GetTopInteractedTagsParams } from "./shared.types";
-import Tag, { ITag } from "@/database/tag.model";
-import { FilterQuery, Types } from "mongoose";
+import { connectDB } from '../mongoose';
+import { GetAllTagsParams, GetTopInteractedTagsParams } from './shared.types';
+import Tag, { ITag } from '@/database/tag.model';
+import { FilterQuery, Types } from 'mongoose';
 // import Interaction from "@/database/interaction.model";
 
 export const getTopInteractedTags = async (
@@ -50,21 +50,21 @@ export const getAllTags = async (params: GetAllTagsParams) => {
   try {
     await connectDB();
 
-    const { page = 1, pageSize = 10, searchQuery = "", filter } = params;
+    const { page = 1, pageSize = 10, searchQuery = '', filter } = params;
 
     let sortOptions = {};
 
     switch (filter) {
-      case "popular":
+      case 'popular':
         sortOptions = { questions: -1 };
         break;
-      case "recent":
+      case 'recent':
         sortOptions = { createdAt: -1 };
         break;
-      case "name":
+      case 'name':
         sortOptions = { name: 1 };
         break;
-      case "old":
+      case 'old':
         sortOptions = { createdAt: 1 };
         break;
 
@@ -73,7 +73,7 @@ export const getAllTags = async (params: GetAllTagsParams) => {
     }
 
     const query: FilterQuery<ITag> = {
-      name: { $regex: new RegExp(searchQuery, "i") },
+      name: { $regex: new RegExp(searchQuery, 'i') },
     };
 
     const tags = await Tag.find(query)
@@ -101,7 +101,7 @@ export const getTopPopularTags = async () => {
       numberOfQuestions: number;
       _id: Types.ObjectId;
     }>([
-      { $project: { name: 1, numberOfQuestions: { $size: "$questions" } } },
+      { $project: { name: 1, numberOfQuestions: { $size: '$questions' } } },
       { $sort: { numberOfQuestions: -1 } },
       { $limit: 5 },
     ]);

@@ -1,6 +1,6 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "../ui/button";
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '../ui/button';
 
 interface Props {
   title: string;
@@ -13,14 +13,14 @@ const NoResult = ({ title, description, link, linkTitle }: Props) => {
   return (
     <div className="mt-10 flex w-full flex-col items-center justify-center">
       <Image
-        src={"/assets/images/light-illustration.png"}
+        src={'/assets/images/light-illustration.png'}
         alt="No results"
         width={270}
         height={200}
         className="block object-contain dark:hidden"
       />
       <Image
-        src={"/assets/images/dark-illustration.png"}
+        src={'/assets/images/dark-illustration.png'}
         alt="No results"
         width={270}
         height={200}

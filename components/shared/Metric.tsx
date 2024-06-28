@@ -1,5 +1,5 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface Props {
   imgUrl: string;
@@ -28,15 +28,15 @@ const Metric = ({
           width={16}
           height={16}
           alt={alt}
-          className={`object-contain ${isAuthor ? "rounded-full" : ""}`}
+          className={`object-contain ${isAuthor ? 'rounded-full' : ''}`}
         />
         <p className={`${textStyles} flex items-center gap-1 leading-none`}>
-          <span className={`${isAuthor ? "hover:underline" : ""}`}>
+          <span className={`${isAuthor ? 'hover:underline' : ''}`}>
             {value}
           </span>
           <span
             className={`small-regular line-clamp-1 leading-none ${
-              isAuthor ? "max-sm:hidden" : ""
+              isAuthor ? 'max-sm:hidden' : ''
             }`}
           >
             {title}
@@ -47,12 +47,12 @@ const Metric = ({
   };
   if (href)
     return (
-      <Link href={href} className="flex-center gap-1 ">
+      <Link href={href} className="flex-center gap-1">
         <MetricContent />
       </Link>
     );
   return (
-    <div className="flex-center flex-wrap gap-1 ">
+    <div className="flex-center flex-wrap gap-1">
       <MetricContent />
     </div>
   );

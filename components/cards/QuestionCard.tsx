@@ -1,11 +1,11 @@
-import Link from "next/link";
-import RenderTag from "../shared/RenderTag";
-import Metric from "../shared/Metric";
-import { numberFormatter, dateFormatter } from "@/lib/utils";
-import { ITag } from "@/database/tag.model";
-import { IUser } from "@/database/user.model";
-import { SignedIn } from "@clerk/nextjs";
-import EditDeleteActions from "../shared/EditDeleteActions";
+import Link from 'next/link';
+import RenderTag from '../shared/RenderTag';
+import Metric from '../shared/Metric';
+import { numberFormatter, dateFormatter } from '@/lib/utils';
+import { ITag } from '@/database/tag.model';
+import { IUser } from '@/database/user.model';
+import { SignedIn } from '@clerk/nextjs';
+import EditDeleteActions from '../shared/EditDeleteActions';
 
 interface Props {
   _id: string;

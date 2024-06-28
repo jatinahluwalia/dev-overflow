@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { Badge } from "../ui/badge";
+import Link from 'next/link';
+import { Badge } from '../ui/badge';
 
 interface Props {
   _id: string;

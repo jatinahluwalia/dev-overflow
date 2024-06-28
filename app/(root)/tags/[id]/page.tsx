@@ -1,12 +1,12 @@
-import QuestionCard from "@/components/cards/QuestionCard";
-import NoResult from "@/components/shared/NoResult";
-import Pagination from "@/components/shared/Pagination";
-import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
-import { getQuestionsByTag } from "@/lib/actions/question.action";
-import { URLProps } from "@/types";
+import QuestionCard from '@/components/cards/QuestionCard';
+import NoResult from '@/components/shared/NoResult';
+import Pagination from '@/components/shared/Pagination';
+import LocalSearchbar from '@/components/shared/search/LocalSearchbar';
+import { getQuestionsByTag } from '@/lib/actions/question.action';
+import { URLProps } from '@/types';
 
 const Home = async ({ params: { id }, searchParams }: URLProps) => {
-  const page = +(searchParams.page || "1");
+  const page = +(searchParams.page || '1');
   const result = await getQuestionsByTag({
     tagId: id,
     searchQuery: searchParams.q,
@@ -46,7 +46,7 @@ const Home = async ({ params: { id }, searchParams }: URLProps) => {
           <NoResult
             title="There's no questions with this tag to show"
             description={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati quis  numquam ea dicta voluptatum sunt!`}
-            link={"/ask-question"}
+            link={'/ask-question'}
             linkTitle="Ask a Question"
           />
         )}

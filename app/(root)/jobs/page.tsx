@@ -1,23 +1,23 @@
-import JobCard from "@/components/cards/JobCard";
-import CountriesFilter from "@/components/shared/CountriesFilter";
-import NoResult from "@/components/shared/NoResult";
-import Pagination from "@/components/shared/Pagination";
-import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
-import { SearchParamsProps } from "@/types";
-import { RootObject as CountryType } from "@/types/countries";
-import { RootObject as JobType } from "@/types/jobs";
+import JobCard from '@/components/cards/JobCard';
+import CountriesFilter from '@/components/shared/CountriesFilter';
+import NoResult from '@/components/shared/NoResult';
+import Pagination from '@/components/shared/Pagination';
+import LocalSearchbar from '@/components/shared/search/LocalSearchbar';
+import { SearchParamsProps } from '@/types';
+import { RootObject as CountryType } from '@/types/countries';
+import { RootObject as JobType } from '@/types/jobs';
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
   const result = await fetch(
     `https://jsearch.p.rapidapi.com/search?query=${
       searchParams.location
-        ? `${searchParams.q || "software jobs"} in ${searchParams.location}`
-        : `${searchParams.q || "software jobs"}`
+        ? `${searchParams.q || 'software jobs'} in ${searchParams.location}`
+        : `${searchParams.q || 'software jobs'}`
     }&page=${searchParams.page || 1}`,
     {
       headers: {
-        "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
-        "X-RapidAPI-Key": process.env.RAPID_API_KEY || "",
+        'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
+        'X-RapidAPI-Key': process.env.RAPID_API_KEY || '',
       },
     },
   );
@@ -27,7 +27,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
   const jobs = data.data;
 
   const countriesResponse = await fetch(
-    "https://restcountries.com/v3.1/all?fields=name,cca2,flags",
+    'https://restcountries.com/v3.1/all?fields=name,cca2,flags',
   );
   const countriesData: CountryType[] = await countriesResponse.json();
 
@@ -62,7 +62,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
       </div>
       <div className="mt-10">
         <Pagination
-          pageNumber={+(searchParams.page || "1")}
+          pageNumber={+(searchParams.page || '1')}
           isNext={jobs?.length === 10}
         />
       </div>

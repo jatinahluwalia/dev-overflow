@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useTheme } from "@/context/ThemeProvider";
-import { Toaster } from "sonner";
+import { useTheme } from '@/context/ThemeProvider';
+import { Toaster } from 'sonner';
 
 const Toast = () => {
   const { mode } = useTheme();

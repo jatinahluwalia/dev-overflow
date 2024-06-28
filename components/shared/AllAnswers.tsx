@@ -1,12 +1,12 @@
-import { AnswerFilters } from "@/constants/filters";
-import Filter from "./Filter";
-import { getAllAnswers } from "@/lib/actions/answer.action";
-import Link from "next/link";
-import Image from "next/image";
-import ParseHTML from "./ParseHTML";
-import Votes from "./Votes";
-import { dateFormatter } from "@/lib/utils";
-import Pagination from "./Pagination";
+import { AnswerFilters } from '@/constants/filters';
+import Filter from './Filter';
+import { getAllAnswers } from '@/lib/actions/answer.action';
+import Link from 'next/link';
+import Image from 'next/image';
+import ParseHTML from './ParseHTML';
+import Votes from './Votes';
+import { dateFormatter } from '@/lib/utils';
+import Pagination from './Pagination';
 
 interface Props {
   questionId: string;
@@ -35,7 +35,7 @@ const AllAnswers = async ({
       </div>
       <div>
         {result.answers.map((answer) => (
-          <article key={answer._id} className="light-border border-b py-10">
+          <article key={answer.id} className="light-border border-b py-10">
             <div className="mb-8 flex items-center justify-between">
               <div className="flex flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
                 <Link
@@ -49,12 +49,12 @@ const AllAnswers = async ({
                     alt="Profile"
                     className="rounded-full object-cover max-sm:mt-0.5"
                   />
-                  <div className="flex flex-col sm:flex-row sm:items-center ">
+                  <div className="flex flex-col sm:flex-row sm:items-center">
                     <p className="body-semibold text-dark300_light700">
                       {answer.author.name}
                     </p>
                     <p className="small-regular text-light400_light500 mt-0.5 line-clamp-1">
-                      <span className="max-sm:hidden"> - </span> answered{" "}
+                      <span className="max-sm:hidden"> - </span> answered{' '}
                       {dateFormatter(answer.createdAt)}
                     </p>
                   </div>

@@ -1,10 +1,10 @@
-import Link from "next/link";
-import Metric from "../shared/Metric";
-import { numberFormatter, dateFormatter } from "@/lib/utils";
-import { IUser } from "@/database/user.model";
-import { IQuestion } from "@/database/question.model";
-import { SignedIn } from "@clerk/nextjs";
-import EditDeleteActions from "../shared/EditDeleteActions";
+import Link from 'next/link';
+import Metric from '../shared/Metric';
+import { numberFormatter, dateFormatter } from '@/lib/utils';
+import { IUser } from '@/database/user.model';
+import { IQuestion } from '@/database/question.model';
+import { SignedIn } from '@clerk/nextjs';
+import EditDeleteActions from '../shared/EditDeleteActions';
 
 interface Props {
   _id: string;

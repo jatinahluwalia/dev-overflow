@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const questionsSchema = z.object({
   title: z.string().min(5).max(130),

@@ -1,7 +1,7 @@
-import { getUserAnswers } from "@/lib/actions/user.action";
-import { SearchParamsProps } from "@/types";
-import AnswerCard from "../cards/AnswerCard";
-import Pagination from "./Pagination";
+import { getUserAnswers } from '@/lib/actions/user.action';
+import { SearchParamsProps } from '@/types';
+import AnswerCard from '../cards/AnswerCard';
+import Pagination from './Pagination';
 
 interface Props extends SearchParamsProps {
   userId: string;
@@ -9,7 +9,7 @@ interface Props extends SearchParamsProps {
 }
 
 const AnswersTab = async ({ userId, searchParams, clerkId }: Props) => {
-  const page = +(searchParams.page || "1");
+  const page = +(searchParams.page || '1');
   const result = await getUserAnswers({ userId, page });
   return (
     <>

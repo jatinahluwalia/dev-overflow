@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { Input } from "../../ui/input";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { formQueryURL, removeQueryKeys } from "@/lib/utils";
+import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
+import { Input } from '../../ui/input';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { formQueryURL, removeQueryKeys } from '@/lib/utils';
 
 interface Props {
   route: string;
-  iconPosition: "left" | "right";
+  iconPosition: 'left' | 'right';
   imgSrc: string;
   placeholder: string;
   otherClasses?: string;
@@ -24,23 +24,23 @@ const LocalSearchbar = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const query = searchParams.get("q");
+  const query = searchParams.get('q');
 
-  const [search, setSearch] = useState(query || "");
+  const [search, setSearch] = useState(query || '');
 
   useEffect(() => {
     const debouncer = setTimeout(() => {
       if (search) {
         const queryString = formQueryURL({
           params: searchParams.toString(),
-          key: "q",
+          key: 'q',
           value: search,
         });
         router.push(`${pathname}?${queryString}`);
       } else {
         const queryString = removeQueryKeys({
           params: searchParams.toString(),
-          keys: ["q"],
+          keys: ['q'],
         });
         router.push(`${pathname}?${queryString}`);
       }
@@ -53,7 +53,7 @@ const LocalSearchbar = ({
     <div
       className={`background-light800_darkgradient flex items-center gap-4 rounded-[10px] border border-light-700 p-4 dark:border-dark-300 ${otherClasses}`}
     >
-      {iconPosition === "left" && (
+      {iconPosition === 'left' && (
         <Image
           src={imgSrc}
           alt="search"
@@ -72,7 +72,7 @@ const LocalSearchbar = ({
         className="text-dark100_light900 no-focus paragraph-regular placeholder:text-light400_light500 h-max grow border-none bg-transparent p-0 shadow-none outline-none"
       />
 
-      {iconPosition === "right" && (
+      {iconPosition === 'right' && (
         <Image
           src={imgSrc}
           alt="search"

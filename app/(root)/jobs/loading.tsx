@@ -1,6 +1,6 @@
-import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
-import { Skeleton } from "@/components/ui/skeleton";
-import React from "react";
+import LocalSearchbar from '@/components/shared/search/LocalSearchbar';
+import { Skeleton } from '@/components/ui/skeleton';
+import React from 'react';
 
 const Loading = () => {
   return (

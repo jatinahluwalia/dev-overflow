@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import Question from "@/database/question.model";
-import { connectDB } from "../mongoose";
-import { ViewQuestionParams } from "./shared.types";
-import Interaction from "@/database/interaction.model";
+import Question from '@/database/question.model';
+import { connectDB } from '../mongoose';
+import { ViewQuestionParams } from './shared.types';
+import Interaction from '@/database/interaction.model';
 
 export const viewQuestion = async (params: ViewQuestionParams) => {
   try {
@@ -15,7 +15,7 @@ export const viewQuestion = async (params: ViewQuestionParams) => {
 
     if (userId) {
       const existingInteraction = await Interaction.findOne({
-        action: "view",
+        action: 'view',
         user: userId,
         question: questionId,
       });
@@ -24,7 +24,7 @@ export const viewQuestion = async (params: ViewQuestionParams) => {
 
       await Interaction.create({
         user: userId,
-        action: "view",
+        action: 'view',
         question: questionId,
       });
     }

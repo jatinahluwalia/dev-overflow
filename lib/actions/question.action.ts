@@ -95,7 +95,7 @@ export const createQuestion = async (params: CreateQuestionParams) => {
         {
           $setOnInsert: { name: tag },
           $addToSet: {
-            questions: question._id,
+            questions: question.id,
             followers: author, // ? Add the author to the followers array to grab from tags gettopinteracted function and check this action
           },
         },
